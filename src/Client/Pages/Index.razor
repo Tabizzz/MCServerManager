@@ -1,12 +1,31 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Autentication</PageTitle>
+<MudGrid>
+	<MudItem xs="6">
+		<MudPaper Class="rounded-lg pa-2 mx-2 my-2">
+			<MudText Typo="Typo.h5">SFTP Credentials</MudText>
+			<MudDivider/>
+			<MudGrid>
+				<MudItem xs="9">
+					<MudTextField Variant="Variant.Filled" Label="Host" Placeholder="myserver.com" @bind-Value="CredentialService.SftpCredentials.Host" Class="py-2"
+					              HelperText="The host to connect"/>
+				</MudItem>
+				<MudItem xs="3">
+					<MudNumericField Variant="Variant.Filled" Label="Port" Placeholder="22" @bind-Value="CredentialService.SftpCredentials.Port" Class="py-2"/>
+				</MudItem>
+			</MudGrid>
+			<MudTextField Variant="Variant.Filled" Label="Username" Placeholder="user.name" @bind-Value="CredentialService.SftpCredentials.User" Class="py-2"
+			              HelperText="The user used to authenticate"/>
+			<MudTextField Variant="Variant.Filled" Label="Password" @bind-Value="CredentialService.SftpCredentials.Password" Class="py-2"
+			              HelperText="The password used to authenticate" InputType="InputType.Password"/>
+			<MudStack Row="true" Justify="Justify.SpaceBetween">
+				<MudSpacer/>
+				<MudButton Variant="Variant.Filled" Color="Color.Primary">Connect</MudButton>
+			</MudStack>
+				
+		</MudPaper>
+	</MudItem>
+</MudGrid>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor!</MudText>
-<MudAlert Severity="Severity.Normal">
-	You can find documentation and examples on our website here:
-	<MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit">
-		<b>www.mudblazor.com</b>
-	</MudLink>
-</MudAlert>
+<MudAlert Severity="Severity.Info">Currently connections can be made only with SFTP, no FTP or FTPS.</MudAlert>
