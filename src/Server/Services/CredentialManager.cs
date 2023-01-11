@@ -21,4 +21,13 @@ public class CredentialManager
 			_credentialsMap.Remove(credentials.Token);
 		}
 	}
+
+	public SftpCredentials? Obtain(SftpCredentials token)
+	{
+		if (token.Token is not null && _credentialsMap.ContainsKey(token.Token))
+		{
+			return _credentialsMap[token.Token];
+		}
+		return null;
+	}
 }

@@ -1,5 +1,24 @@
 @page "/files/{*Path}"
+@using WebServerManager.Client.Services
+@inject CredentialService CredentialService
+@inject HttpClient Http
 
 <PageTitle>Files</PageTitle>
 
 <MudText>@Path</MudText>
+
+@if (FileEntries != null)
+{
+	<MudList Clickable="true" Dense="true">
+		@foreach (var file in FileEntries)
+		{
+			<MudListItem Icon="@Icons.Material.Filled.Folder">
+				@file.Path
+			</MudListItem>
+		}
+	</MudList>
+}
+else
+{
+	<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+}

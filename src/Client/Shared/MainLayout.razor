@@ -1,6 +1,7 @@
 ﻿@using WebServerManager.Client.Services
 @inherits LayoutComponentBase
 @inject CredentialService CredentialService
+@inject NavigationManager NavigationManager
 
 <MudThemeProvider IsDarkMode="true"/>
 <MudDialogProvider/>
@@ -29,11 +30,11 @@
 				{
 					<MudAlert Severity="Severity.Error">
 						You need to specify SFTP Credentials before access to this page!
-						<MudButton Href="/"
-						           Variant="Variant.Text"
+						<MudButton Variant="Variant.Text"
 						           EndIcon="@Icons.Material.Filled.Login"
 						           Color="Color.Secondary"
-						           Style="text-transform:none">
+						           Style="text-transform:none"
+						           OnClick="GotoAuth">
 							Go to Auth
 						</MudButton>
 					</MudAlert>

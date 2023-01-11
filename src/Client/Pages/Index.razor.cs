@@ -33,6 +33,7 @@ public partial class Index
 		{
 			case HttpStatusCode.Accepted when token != null:
 				CredentialService.SftpCredentials.Token = token.Token;
+				CredentialService.SftpCredentials.Password = string.Empty;
 				CredentialService.SftpCredentials.IsValid = true;
 				break;
 			case HttpStatusCode.Unauthorized when token != null:
