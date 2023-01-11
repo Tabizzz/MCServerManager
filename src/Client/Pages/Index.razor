@@ -1,7 +1,10 @@
 ﻿@page "/"
+@using MessagePipe
+@using WebServerManager.Shared
 @inject HttpClient Http
+@inject IAsyncPublisher<SftpCredentials> SftpPublisher
 
-<PageTitle>Autentication</PageTitle>
+<PageTitle>Authentication</PageTitle>
 <MudGrid>
 	<MudItem xs="6">
 		<MudPaper Class="rounded-lg pa-2 mx-2 my-2">
@@ -48,8 +51,8 @@
 			else
 			{
 				<MudAlert Severity="Severity.Success">
-						<div>You are logged in as <b>@CredentialService.SftpCredentials.User</b></div>
-						<MudButton Color="Color.Error" Size="Size.Small">Disconnect</MudButton>
+						You are logged in as <b>@CredentialService.SftpCredentials.User</b>
+						<MudButton Color="Color.Error" Size="Size.Small" OnClick="Logout">Disconnect</MudButton>
 				</MudAlert>
 			}
 		</MudPaper>

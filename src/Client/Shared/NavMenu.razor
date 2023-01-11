@@ -1,4 +1,14 @@
-﻿<MudNavMenu>
+﻿@using WebServerManager.Client.Services
+@using MessagePipe
+@using WebServerManager.Shared
+@inject CredentialService CredentialService
+@inject IAsyncSubscriber<SftpCredentials> SftpSubscriber
+@implements IDisposable
+
+<MudNavMenu>
 	<MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Person">Authentication</MudNavLink>
-	<MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
+	@if (CredentialService.SftpCredentials.IsValid)
+	{
+		<MudNavLink Href="files" Match="NavLinkMatch.Prefix" Icon="@Icons.Custom.Uncategorized.Folder">Filesystem</MudNavLink>
+	}
 </MudNavMenu>

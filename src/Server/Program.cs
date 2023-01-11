@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.ResponseCompression;
 using WebServerManager.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,5 +29,6 @@ app.UseRouting();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
+app.MapFallbackToFile("/files/{*path}", "index.html");
 
 app.Run();

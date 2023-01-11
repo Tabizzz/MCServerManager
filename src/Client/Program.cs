@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using MessagePipe;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
@@ -13,5 +14,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<CredentialService>();
+builder.Services.AddMessagePipe();
 
 await builder.Build().RunAsync();

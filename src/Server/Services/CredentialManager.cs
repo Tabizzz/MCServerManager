@@ -5,12 +5,20 @@ namespace WebServerManager.Server.Services;
 // todo: better auth method?
 public class CredentialManager
 {
-	IDictionary<string, SftpCredentials> CredentialsMap = new ConcurrentDictionary<string, SftpCredentials>();
+	readonly IDictionary<string, SftpCredentials> _credentialsMap = new ConcurrentDictionary<string, SftpCredentials>();
 	
 	public string Login(SftpCredentials credentials)
 	{
 		var dev = Guid.NewGuid().ToString();
-		CredentialsMap.Add(dev, credentials);
+		_credentialsMap.Add(dev, credentials);
 		return dev;
+	}
+
+	public void Logout(SftpCredentials credentials)
+	{
+		if (credentials.Token is not null && _credentialsMap.ContainsKey(credentials.Token))
+		{
+			_credentialsMap.Remove(credentials.Token);
+		}
 	}
 }

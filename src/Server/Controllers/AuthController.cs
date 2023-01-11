@@ -20,8 +20,17 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpPost]
-	public SftpCredentials? Auth(SftpCredentials credentials)
+	[Route("logout")]
+	public void LogOut(SftpCredentials credentials)
 	{
+		_logger.LogInformation("Logout user {Token}", credentials.Token);
+		_credentialManager.Logout(credentials);
+	}
+
+	[HttpPost]
+	public SftpCredentials Auth(SftpCredentials credentials)
+	{
+		_logger.LogInformation("Login user {Token}", credentials.User);
 		try
 		{
 			using var client = new SftpClient(credentials.Host, credentials.Port, credentials.User, credentials.Password );

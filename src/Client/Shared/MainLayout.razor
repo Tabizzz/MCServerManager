@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using WebServerManager.Client.Services
+@inherits LayoutComponentBase
+@inject CredentialService CredentialService
 
 <MudThemeProvider IsDarkMode="true"/>
 <MudDialogProvider/>
@@ -18,7 +20,25 @@
 	</MudDrawer>
 	<MudMainContent>
 		<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="px-16 pt-8">
-			@Body
+			<CascadingValue Value="this">
+				@if (!RequireSftp || (RequireSftp && CredentialService.SftpCredentials.IsValid))
+				{
+					@Body
+				}
+				else
+				{
+					<MudAlert Severity="Severity.Error">
+						You need to specify SFTP Credentials before access to this page!
+						<MudButton Href="/"
+						           Variant="Variant.Text"
+						           EndIcon="@Icons.Material.Filled.Login"
+						           Color="Color.Secondary"
+						           Style="text-transform:none">
+							Go to Auth
+						</MudButton>
+					</MudAlert>
+				}
+			</CascadingValue>
 		</MudContainer>
 	</MudMainContent>
 </MudLayout>

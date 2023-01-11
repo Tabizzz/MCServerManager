@@ -1,19 +1,25 @@
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
 using WebServerManager.Client.Services;
 using WebServerManager.Shared;
 namespace WebServerManager.Client.Pages;
 
 public partial class Index
 {
-	[Inject]
-	public CredentialService CredentialService { get; set; } = null!;
-
+	[Inject] public CredentialService CredentialService { get; set; } = null!;
+	
 	public String ErrorMessage { get; set; } = "";
 	
 	public bool AuthLoading { get; set; }
+
+	public async Task Logout()
+	{
+		await Http.PostAsJsonAsync("Auth/logout", CredentialService.SftpCredentials);
+		CredentialService.SftpCredentials.Token = null;
+		CredentialService.SftpCredentials.IsValid = false;
+		await SftpPublisher.PublishAsync(CredentialService.SftpCredentials);
+	}
 
 	public async Task OnClickConnect()
 	{
@@ -23,19 +29,20 @@ public partial class Index
 		var response = await Http.PostAsJsonAsync("Auth", CredentialService.SftpCredentials);
 		AuthLoading = false;
 		var token = await response.Content.ReadFromJsonAsync<SftpCredentials>();
-		if (response.StatusCode == HttpStatusCode.Accepted && token != null)
+		switch (response.StatusCode)
 		{
-			CredentialService.SftpCredentials.Token = token.Token;
-			CredentialService.SftpCredentials.IsValid = true;
+			case HttpStatusCode.Accepted when token != null:
+				CredentialService.SftpCredentials.Token = token.Token;
+				CredentialService.SftpCredentials.IsValid = true;
+				break;
+			case HttpStatusCode.Unauthorized when token != null:
+				ErrorMessage = token.Token!;
+				break;
+			default:
+				ErrorMessage = "An unknow error hass ocurred";
+				break;
 		}
-		else if (response.StatusCode == HttpStatusCode.Unauthorized && token != null)
-		{
-			ErrorMessage = token.Token!;
-		}
-		else
-		{
-			ErrorMessage = "An unknow error hass ocurred";
-		}
+		await SftpPublisher.PublishAsync(CredentialService.SftpCredentials);
 		StateHasChanged();
 	}
 }
