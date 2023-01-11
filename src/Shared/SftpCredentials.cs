@@ -11,4 +11,6 @@ public class SftpCredentials
 	public String Password { get; set; } = "";
 
 	public int Port { get; set; } = 22;
+	
+	public bool IsValid { get; set; }
 }
