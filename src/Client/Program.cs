@@ -14,6 +14,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<CredentialService>();
+builder.Services.AddScoped<FileSystemService>();
 builder.Services.AddMessagePipe();
 
 await builder.Build().RunAsync();

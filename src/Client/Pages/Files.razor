@@ -1,24 +1,47 @@
 @page "/files/{*Path}"
 @using WebServerManager.Client.Services
 @inject CredentialService CredentialService
-@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject FileSystemService FileSystem
 
-<PageTitle>Files</PageTitle>
+<PageTitle>@Path</PageTitle>
 
-<MudText>@Path</MudText>
+<MudPaper Elevation="3" Class="mb-4">
+	<MudStack Row="true" Justify="Justify.SpaceBetween">
+		<MudBreadcrumbs Items="_pathItems">/</MudBreadcrumbs>
+		<MudStack Row="true" Justify="Justify.FlexEnd" Class="align-center">
+			@if (BackgroundLoadingFiles)
+			{
+				<MudProgressCircular Color="Color.Success" Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+			}
+			<MudButtonGroup OverrideStyles="false" Class="align-center mr-3">
+				<MudButton Color="Color.Default" Variant="Variant.Outlined" Size="Size.Medium">Create Directory</MudButton>
+				<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium">Upload</MudButton>
+				<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium">New File</MudButton>
+			</MudButtonGroup>
+		</MudStack>
+	</MudStack>
+</MudPaper>
 
 @if (FileEntries != null)
 {
-	<MudList Clickable="true" Dense="true">
+	<MudList Clickable="true" Dense="true" DisablePadding="true">
 		@foreach (var file in FileEntries)
 		{
-			<MudListItem Icon="@Icons.Material.Filled.Folder">
-				@file.Path
-			</MudListItem>
+			<MudPaper Elevation="1" Class="mb-1">
+					<MudListItem Href="@((file.IsFolder ? "/files" : "raw") + file.Path)">
+						<MudStack Row="true" Justify="Justify.FlexStart">
+							<MudIcon Icon="@(file.IsFolder ? Icons.Custom.Uncategorized.Folder : Icons.Custom.FileFormats.FileDocument)"/>
+							<MudText>@file.Name</MudText>
+						</MudStack>
+					</MudListItem>
+				</MudPaper>
 		}
 	</MudList>
 }
 else
 {
-	<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+	<MudStack Row="true" Justify="Justify.Center">
+		<MudProgressCircular Class="ms-n1" Size="Size.Large" Indeterminate="true"/>
+	</MudStack>
 }
