@@ -10,7 +10,7 @@
 
 @code {
 
-	private int _currentCount = 0;
+	private int _currentCount;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -20,7 +20,7 @@
 		}
 		else
 		{
-			await LocalStorage.SetItemAsync<int>("current", _currentCount);
+			await LocalStorage.SetItemAsync("current", _currentCount);
 		}
 	}
 
@@ -28,6 +28,6 @@
 	{
 		_currentCount = await LocalStorage.GetItemAsync<int>("current");
 		_currentCount++;
-		await LocalStorage.SetItemAsync<int>("current", _currentCount);
+		await LocalStorage.SetItemAsync("current", _currentCount);
 	}
 }

@@ -8,14 +8,14 @@ public class FileSystemService
 {
 	readonly IDictionary<string, List<SftpFileEntry>> _entriesPerPath = new Dictionary<string, List<SftpFileEntry>>();
 
-	HttpClient Http;
+	readonly HttpClient _http;
 
-	CredentialService CredentialService;
+	readonly CredentialService _credentialService;
 
 	public FileSystemService(HttpClient http, CredentialService credentialService)
 	{
-		Http = http;
-		CredentialService = credentialService;
+		_http = http;
+		_credentialService = credentialService;
 	}
 
 	public bool HasEntriesForPath(string path) => _entriesPerPath.ContainsKey(path);
@@ -31,20 +31,20 @@ public class FileSystemService
 		return _entriesPerPath[path].ToArray();
 	}
 
-	public async Task UpdatePath(string Path)
+	public async Task UpdatePath(string path)
 	{
-		var path = HttpUtility.UrlEncode(Path);
+		var urlEncode = HttpUtility.UrlEncode(path);
 		
-		var response = await Http.PostAsJsonAsync($"Sftp/ListFiles?path={path}", CredentialService.SftpCredentials);
+		var response = await _http.PostAsJsonAsync($"Sftp/ListFiles?path={urlEncode}", _credentialService.SftpCredentials);
 		if (response.StatusCode == HttpStatusCode.Accepted)
 		{
 			var array = await response.Content.ReadFromJsonAsync<SftpFileEntry[]>();
 			var list = array?.ToList() ?? new ();
-			_entriesPerPath[Path] = list;
+			_entriesPerPath[path] = list;
 		}
-		else if (HasEntriesForPath(Path))
+		else if (HasEntriesForPath(path))
 		{
-			_entriesPerPath.Remove(Path);
+			_entriesPerPath.Remove(path);
 		}
 	}
 }

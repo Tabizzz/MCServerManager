@@ -6,13 +6,13 @@
 
 <MudText Typo="Typo.h3" GutterBottom="true">Weather forecast</MudText>
 <MudText Class="mb-8">This component demonstrates fetching data from the server.</MudText>
-@if (forecasts == null)
+@if (_forecasts == null)
 {
 	<MudProgressCircular Color="Color.Default" Indeterminate="true"/>
 }
 else
 {
-	<MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0">
+	<MudTable Items="_forecasts" Hover="true" SortLabel="Sort By" Elevation="0">
 		<HeaderContent>
 			<MudTh>
 				<MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WeatherForecast, object>(x=>x.Date)">Date</MudTableSortLabel>
@@ -34,17 +34,17 @@ else
 			<MudTd DataLabel="Summary">@context.Summary</MudTd>
 		</RowTemplate>
 		<PagerContent>
-			<MudTablePager PageSizeOptions="new int[]{50, 100}"/>
+			<MudTablePager PageSizeOptions="new[]{50, 100}"/>
 		</PagerContent>
 	</MudTable>
 }
 
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private WeatherForecast[]? _forecasts;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        _forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
     }
 }
