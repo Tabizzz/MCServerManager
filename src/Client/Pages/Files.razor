@@ -12,7 +12,12 @@
 		<MudStack Row="true" Justify="Justify.FlexEnd" Class="align-center">
 			@if (BackgroundLoadingFiles)
 			{
-				<MudProgressCircular Color="Color.Success" Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+				<MudProgressCircular Color="Color.Success" Class="ms-n1 mr-3" Size="Size.Small" Indeterminate="true"/>
+			}
+			else if(FileEntries != null)
+			{
+				<MudIconButton Color="Color.Success" Size="Size.Medium" Icon="@Icons.Material.Filled.Cached"
+				               OnClick="UpdateFiles"/>
 			}
 			<MudButtonGroup OverrideStyles="false" Class="align-center mr-3">
 				<MudButton Color="Color.Default" Variant="Variant.Outlined" Size="Size.Medium">Create Directory</MudButton>
@@ -29,7 +34,7 @@
 		@foreach (var file in FileEntries)
 		{
 			<MudPaper Elevation="1" Class="mb-1">
-					<MudListItem Href="@((file.IsFolder ? "/files" : "raw") + file.Path)">
+					<MudListItem Href="@(GetLinkFOrFileEntry(file))">
 						<MudStack Row="true" Justify="Justify.FlexStart">
 							<MudIcon Icon="@(file.IsFolder ? Icons.Custom.Uncategorized.Folder : Icons.Custom.FileFormats.FileDocument)"/>
 							<MudText>@file.Name</MudText>

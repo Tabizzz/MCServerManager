@@ -6,7 +6,7 @@ using WebServerManager.Shared;
 namespace WebServerManager.Server.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 public class AuthController : ControllerBase
 {
 	readonly ILogger<AuthController> _logger;
@@ -20,7 +20,6 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpPost]
-	[Route("session")]
 	public SftpCredentials? GetSession(SftpCredentials credentials)
 	{
 		_logger.LogInformation("Restoring session {Token}", credentials.Token);
@@ -30,7 +29,6 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpPost]
-	[Route("logout")]
 	public void LogOut(SftpCredentials credentials)
 	{
 		_logger.LogInformation("Logout user {Token}", credentials.Token);
@@ -38,7 +36,7 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpPost]
-	public SftpCredentials Auth(SftpCredentials credentials)
+	public SftpCredentials Login(SftpCredentials credentials)
 	{
 		_logger.LogInformation("Login user {Token}", credentials.User);
 		try

@@ -37,8 +37,11 @@ public partial class Files : IDisposable
 			BackgroundLoadingFiles = true;
 			StateHasChanged();
 		}
-		await FileSystem.UpdatePath(Path);
-		FileEntries = FileSystem.GetCacheEntries(Path);
+		var res = await FileSystem.UpdatePath(Path);
+		if (res.Item1 == Path)
+		{
+			FileEntries = res.Item2;
+		}
 		BackgroundLoadingFiles = false;
 		StateHasChanged();
 	}
@@ -82,5 +85,15 @@ public partial class Files : IDisposable
 	public void Dispose()
 	{
 		NavigationManager.LocationChanged -= NavigationManagerOnLocationChanged;
+	}
+
+	string GetLinkFOrFileEntry(SftpFileEntry file)
+	{
+		var path = (file.IsFolder ? "/files" : "raw") + file.Path;
+		if (file.IsFolder || System.IO.Path.GetExtension(file.Path) is ".yml" or ".json" or ".txt" or ".properties")
+		{
+			return path;
+		}
+		return null!;
 	}
 }

@@ -28,7 +28,7 @@ public partial class Index
 		ErrorMessage = "";
 		AuthLoading = true;
 		StateHasChanged();
-		var response = await Http.PostAsJsonAsync("Auth", CredentialService.SftpCredentials);
+		var response = await Http.PostAsJsonAsync("Auth/Login", CredentialService.SftpCredentials);
 		AuthLoading = false;
 		var token = await response.Content.ReadFromJsonAsync<SftpCredentials>();
 		switch (response.StatusCode)

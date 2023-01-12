@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http.Json;
 using System.Web;
@@ -6,7 +7,7 @@ namespace WebServerManager.Client.Services;
 
 public class FileSystemService
 {
-	readonly IDictionary<string, List<SftpFileEntry>> _entriesPerPath = new Dictionary<string, List<SftpFileEntry>>();
+	readonly IDictionary<string, List<SftpFileEntry>> _entriesPerPath = new ConcurrentDictionary<string, List<SftpFileEntry>>();
 
 	readonly HttpClient _http;
 
@@ -31,7 +32,7 @@ public class FileSystemService
 		return _entriesPerPath[path].ToArray();
 	}
 
-	public async Task UpdatePath(string path)
+	public async Task<(string, SftpFileEntry[])> UpdatePath(string path)
 	{
 		var urlEncode = HttpUtility.UrlEncode(path);
 		
@@ -41,10 +42,12 @@ public class FileSystemService
 			var array = await response.Content.ReadFromJsonAsync<SftpFileEntry[]>();
 			var list = array?.ToList() ?? new ();
 			_entriesPerPath[path] = list;
+			return (path, GetCacheEntries(path));
 		}
-		else if (HasEntriesForPath(path))
+		if (HasEntriesForPath(path))
 		{
 			_entriesPerPath.Remove(path);
 		}
+		return (path, Array.Empty<SftpFileEntry>());
 	}
 }

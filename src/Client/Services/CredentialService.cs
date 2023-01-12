@@ -57,7 +57,7 @@ public class CredentialService
 		}
 		if (data.SaveCredentials)
 		{
-			var response = await _client.PostAsJsonAsync("Auth", data);
+			var response = await _client.PostAsJsonAsync("Auth/Login", data);
 			var token = await response.Content.ReadFromJsonAsync<SftpCredentials>();
 			if (response.StatusCode == HttpStatusCode.Accepted && token is not null)
 			{
