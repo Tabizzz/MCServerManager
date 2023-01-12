@@ -10,6 +10,8 @@ public class CredentialManager
 	public string Login(SftpCredentials credentials)
 	{
 		var dev = Guid.NewGuid().ToString();
+		credentials.IsValid = true;
+		credentials.Token = dev;
 		_credentialsMap.Add(dev, credentials);
 		return dev;
 	}
@@ -22,12 +24,17 @@ public class CredentialManager
 		}
 	}
 
-	public SftpCredentials? Obtain(SftpCredentials token)
+	public SftpCredentials? Obtain(SftpCredentials credentials)
 	{
-		if (token.Token is not null && _credentialsMap.ContainsKey(token.Token))
-		{
-			return _credentialsMap[token.Token];
-		}
-		return null;
+		return credentials.Token is null || !_credentialsMap.TryGetValue(credentials.Token, out var value) ? null : value;
+	}
+
+	public SftpCredentials? GetSession(SftpCredentials credentials)
+	{
+		if (credentials.Token is null || !_credentialsMap.TryGetValue(credentials.Token, out var value))
+			return null;
+		var clone = (SftpCredentials)value.Clone();
+		clone.Password = "";
+		return clone;
 	}
 }

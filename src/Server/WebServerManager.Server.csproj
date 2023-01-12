@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	<LangVersion>latest</LangVersion>
+	<AssemblyName>WebServerManager</AssemblyName>
+	<SelfContained>false</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>

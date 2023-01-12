@@ -17,6 +17,8 @@ public partial class Index
 	{
 		await Http.PostAsJsonAsync("Auth/logout", CredentialService.SftpCredentials);
 		CredentialService.SftpCredentials.Token = null;
+		await CredentialService.Clear();
+		CredentialService.SftpCredentials.SaveCredentials = false;
 		CredentialService.SftpCredentials.IsValid = false;
 		await SftpPublisher.PublishAsync(CredentialService.SftpCredentials);
 	}
@@ -33,6 +35,7 @@ public partial class Index
 		{
 			case HttpStatusCode.Accepted when token != null:
 				CredentialService.SftpCredentials.Token = token.Token;
+				await CredentialService.Save();
 				CredentialService.SftpCredentials.Password = string.Empty;
 				CredentialService.SftpCredentials.IsValid = true;
 				break;

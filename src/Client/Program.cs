@@ -17,4 +17,6 @@ builder.Services.AddScoped<CredentialService>();
 builder.Services.AddScoped<FileSystemService>();
 builder.Services.AddMessagePipe();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+await host.Services.GetRequiredService<CredentialService>().Load();
+await host.RunAsync();

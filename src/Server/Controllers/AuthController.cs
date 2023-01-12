@@ -20,6 +20,16 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpPost]
+	[Route("session")]
+	public SftpCredentials? GetSession(SftpCredentials credentials)
+	{
+		_logger.LogInformation("Restoring session {Token}", credentials.Token);
+		var dev =  _credentialManager.GetSession(credentials);
+		Response.StatusCode = (int)(dev == null ? HttpStatusCode.Unauthorized : HttpStatusCode.Accepted);
+		return dev;
+	}
+
+	[HttpPost]
 	[Route("logout")]
 	public void LogOut(SftpCredentials credentials)
 	{
@@ -33,7 +43,7 @@ public class AuthController : ControllerBase
 		_logger.LogInformation("Login user {Token}", credentials.User);
 		try
 		{
-			using var client = new SftpClient(credentials.Host, credentials.Port, credentials.User, credentials.Password );
+			using var client = new SftpClient(credentials.Host, credentials.Port, credentials.User, credentials.Password);
 			client.Connect();
 			Response.StatusCode = (int)HttpStatusCode.Accepted;
 			return new ()
@@ -47,7 +57,7 @@ public class AuthController : ControllerBase
 			Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 			return new ()
 			{
-				Token = e.Message
+				Token = e.Message == "username" ? "Invalid username" : e.Message
 			};
 		}
 	}
