@@ -59,6 +59,25 @@ public class SftpController : ControllerBase
 	}
 
 	[HttpPost]
+	public void UpdateRawText(UpdateTextFileRequest request)
+	{
+		_logger.LogInformation("Updating text file \"{Path}\" for {Token}", request.Path, request.Credentials.Token);
+		if (_credentialManager.Obtain(request.Credentials) is { Token: { } } credentials && 
+		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		{
+			try
+			{ 
+				client.WriteAllText(request.Path, request.Content);
+				Response.StatusCode = (int)HttpStatusCode.Accepted;
+				return;
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Error on authentication");
+			}
+		}
+		Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+	}
 
 	[HttpPost]
 	public string RawText([FromBody] SftpCredentials token, [FromQuery] string path)
@@ -71,15 +90,14 @@ public class SftpController : ControllerBase
 				if (_sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
 				{
 					var info = client.Get(path);
-					using var text = client.OpenText(path);
-					if (text is not null)
-					{
-						Response.StatusCode = (int)HttpStatusCode.Accepted;
-						if (info.Length < 5e6)
-							return text.ReadToEnd();
-						Response.StatusCode = (int)HttpStatusCode.InsufficientStorage;
-						return info.Length + ";" + 5e6;
-					}
+					using var text = client.OpenText(path)!;
+					
+					Response.StatusCode = (int)HttpStatusCode.Accepted;
+					if (info.Length < 5e6)
+						return text.ReadToEnd();
+					Response.StatusCode = (int)HttpStatusCode.InsufficientStorage;
+					
+					return info.Length + ";" + 5e6;
 				}
 			}
 			catch (Exception e)

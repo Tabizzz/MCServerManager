@@ -1,6 +1,5 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Renci.SshNet;
 using WebServerManager.Server.Services;
 using WebServerManager.Shared;
 namespace WebServerManager.Server.Controllers;

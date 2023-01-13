@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
-using MudBlazor;
 using WebServerManager.Client.Shared;
 using WebServerManager.Shared;
 namespace WebServerManager.Client.Pages;

@@ -4,7 +4,9 @@ using System.Web;
 using BlazorMonaco;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using MudBlazor;
 using WebServerManager.Client.Shared;
+using WebServerManager.Shared;
 namespace WebServerManager.Client.Pages;
 
 public partial class Raw : IAsyncDisposable
@@ -16,6 +18,8 @@ public partial class Raw : IAsyncDisposable
 	bool _loaded;
 
 	string? _error;
+
+	bool _saving;
 	
 	StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
 	{
@@ -30,7 +34,8 @@ public partial class Raw : IAsyncDisposable
 			{
 				Enabled = false
 			},
-			ScrollBeyondLastLine = false
+			ScrollBeyondLastLine = false,
+			AutomaticLayout = true
 		};
 	}
 
@@ -70,7 +75,33 @@ public partial class Raw : IAsyncDisposable
 
 	async Task SaveFile()
 	{
-		var text = await Editor.GetValue();
-		
+		_saving = true;
+		StateHasChanged();
+		ValidatePath();
+		var ressponse = await Http.PostAsJsonAsync("Sftp/UpdateRawText", new UpdateTextFileRequest()
+		{
+			Content = await Editor.GetValue(),
+			Path = Path,
+			Credentials = CredentialService.SftpCredentials
+		});
+
+		if (ressponse.StatusCode == HttpStatusCode.Accepted)
+		{
+			Snackbar.Add("File sucessfully saved", Severity.Success, key: "raw/fileSaved");
+		}
+		else
+		{
+			Snackbar.Add("Unable to save the file", Severity.Error, key: "raw/fileSavedError");
+		}
+		_saving = false;
+		StateHasChanged();
+	}
+
+	async Task EditorOnDidInit()
+	{
+		await Editor.AddCommand((int)KeyMode.CtrlCmd | (int)KeyCode.KEY_S, (_, _) =>
+		{
+			InvokeAsync(SaveFile);
+		});
 	}
 }
