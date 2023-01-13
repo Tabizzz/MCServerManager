@@ -56,6 +56,38 @@ public class SftpController : ControllerBase
 	}
 
 	[HttpPost]
+	public string RawText([FromBody] SftpCredentials token, [FromQuery] string path)
+	{
+		_logger.LogInformation("Reading text file \"{Path}\" for {Token}", path, token.Token);
+		var credentials = _credentialManager.Obtain(token);
+		if (credentials is not null)
+		{
+			try
+			{
+				using var client = new SftpClient(credentials.Host, credentials.Port, credentials.User, credentials.Password);
+				client.Connect();
+				Response.StatusCode = (int)HttpStatusCode.Accepted;
+				var info = client.Get(path);
+				using var text = client.OpenText(path);
+				if (text is not null)
+				{
+					if(info.Length < 5e6)
+						return text.ReadToEnd();
+					Response.StatusCode = (int)HttpStatusCode.InsufficientStorage;
+					return info.Length + ";" + 5e6;
+				}
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Error on authentication");
+			}
+		}
+
+		Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+		return string.Empty;
+	}
+
+	[HttpPost]
 	public IActionResult ReadFile([FromBody] SftpCredentials token, [FromQuery] string path)
 	{
 		_logger.LogInformation("Reading file \"{Path}\" for {Token}", path, token.Token);

@@ -1,14 +1,15 @@
 @page "/files/{*Path}"
 @using WebServerManager.Client.Services
+@inherits WebServerManager.Client.Components.PathComponentBase
 @inject CredentialService CredentialService
 @inject NavigationManager NavigationManager
 @inject FileSystemService FileSystem
 
 <PageTitle>@Path</PageTitle>
 
-<MudPaper Elevation="3" Class="mb-4">
+<MudPaper Elevation="3" Class="mb-4 mud-dark">
 	<MudStack Row="true" Justify="Justify.SpaceBetween">
-		<MudBreadcrumbs Items="_pathItems">/</MudBreadcrumbs>
+		<MudBreadcrumbs Items="PathItems"/>
 		<MudStack Row="true" Justify="Justify.FlexEnd" Class="align-center">
 			@if (BackgroundLoadingFiles)
 			{
@@ -19,7 +20,7 @@
 				<MudIconButton Color="Color.Success" Size="Size.Medium" Icon="@Icons.Material.Filled.Cached"
 				               OnClick="UpdateFiles"/>
 			}
-			<MudButtonGroup OverrideStyles="false" Class="align-center mr-3">
+			<MudButtonGroup OverrideStyles="false" Class="align-center mr-3" Style="white-space: nowrap">
 				<MudButton Color="Color.Default" Variant="Variant.Outlined" Size="Size.Medium">Create Directory</MudButton>
 				<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium">Upload</MudButton>
 				<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium">New File</MudButton>

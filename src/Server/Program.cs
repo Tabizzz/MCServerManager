@@ -30,5 +30,6 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 app.MapFallbackToFile("/files/{*path}", "index.html");
+app.MapFallbackToFile("/raw/{*path}", "index.html");
 
 app.Run();

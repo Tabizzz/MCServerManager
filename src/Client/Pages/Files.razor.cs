@@ -8,15 +8,11 @@ namespace WebServerManager.Client.Pages;
 public partial class Files : IDisposable
 {
 	[CascadingParameter] public MainLayout Layout { get; set; } = null!;
-
-	[Parameter] public string Path { get; set; } = "";
 	
 	public SftpFileEntry[]? FileEntries { get; set; }
 
 	public bool BackgroundLoadingFiles { get; set; }
-
-	readonly List<BreadcrumbItem> _pathItems = new();
-
+	
 	protected override async Task OnInitializedAsync()
 	{
 		Layout.RequireSftp = true;
@@ -48,38 +44,11 @@ public partial class Files : IDisposable
 
 	void NavigationManagerOnLocationChanged(object? sender, LocationChangedEventArgs e)
 	{
+		if (!NavigationManager.ToBaseRelativePath(e.Location).StartsWith("files"))
+			return;
 		FileEntries = null;
 		StateHasChanged();
-		InvokeAsync(async () =>
-		{
-			await UpdateFiles();
-		});
-	}
-
-	void ParsePathItems()
-	{
-		_pathItems.Clear();
-		var tpath = "/";
-		var split = ("files" + Path).Trim('/').Split("/");
-		foreach(var path in split.SkipLast(1))
-		{
-			tpath += path + "/";
-			_pathItems.Add(new (path, tpath));
-		}
-		_pathItems.Add(new (split[^1], null, true));
-	}
-
-	protected override void OnParametersSet()
-	{
-		ValidatePath();
-		ParsePathItems();
-	}
-
-	void ValidatePath()
-	{
-		if (string.IsNullOrWhiteSpace(Path)) Path = string.Empty;
-		if(!Path.StartsWith("/"))
-			Path = "/" + Path;
+		InvokeAsync(async () => { await UpdateFiles(); });
 	}
 
 	public void Dispose()

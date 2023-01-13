@@ -30,3 +30,11 @@
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+.monaco-editor-container {
+    height: 100%;
+}
+
+.mud-breadcrumb-separator {
+    padding: 0 4px;
+}

@@ -48,7 +48,7 @@ public class CredentialService
 		if (data is { ShareToken: true, Token: { } })
 		{
 			toauth.Token = data.Token;
-			var response = await _client.PostAsJsonAsync("Auth/session", toauth);
+			var response = await _client.PostAsJsonAsync("Auth/GetSession", toauth);
 			if (response.StatusCode == HttpStatusCode.Accepted && await response.Content.ReadFromJsonAsync<SftpCredentials>() is { Token: not null} token)
 			{
 				SftpCredentials = token;
