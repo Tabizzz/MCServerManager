@@ -13,9 +13,12 @@ public class AuthController : ControllerBase
 
 	readonly CredentialManager _credentialManager;
 
-	public AuthController(ILogger<AuthController> logger, CredentialManager credentialManager)
+	readonly SftpConnectionsManager _sftpConnectionsManager;
+
+	public AuthController(ILogger<AuthController> logger, CredentialManager credentialManager, SftpConnectionsManager sftpConnectionsManager)
 	{
 		_credentialManager = credentialManager;
+		_sftpConnectionsManager = sftpConnectionsManager;
 		_logger = logger;
 	}
 
@@ -32,7 +35,8 @@ public class AuthController : ControllerBase
 	public void LogOut(SftpCredentials credentials)
 	{
 		_logger.LogInformation("Logout user {Token}", credentials.Token);
-		_credentialManager.Logout(credentials);
+		if(_credentialManager.Logout(credentials))
+			_sftpConnectionsManager.DeleteConnection(credentials.Token!);
 	}
 
 	[HttpPost]
@@ -41,12 +45,12 @@ public class AuthController : ControllerBase
 		_logger.LogInformation("Login user {Token}", credentials.User);
 		try
 		{
-			using var client = new SftpClient(credentials.Host, credentials.Port, credentials.User, credentials.Password);
-			client.Connect();
+			var tosave = _credentialManager.Login(credentials);
+			_sftpConnectionsManager.CreateConnection(tosave.Token!);
 			Response.StatusCode = (int)HttpStatusCode.Accepted;
 			return new ()
 			{
-				Token =  _credentialManager.Login(credentials)
+				Token = tosave.Token
 			};
 		}
 		catch (Exception e)

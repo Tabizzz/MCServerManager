@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<CredentialManager>();
+builder.Services.AddSingleton<SftpConnectionsManager>();
+builder.Services.AddHostedService<MonitoringService<SftpConnectionsManager>>();
 
 var app = builder.Build();
 

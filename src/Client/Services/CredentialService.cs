@@ -4,7 +4,7 @@ using Blazored.LocalStorage;
 using WebServerManager.Shared;
 namespace WebServerManager.Client.Services;
 
-public class CredentialService
+public class CredentialService : IAsyncDisposable
 {
 	readonly ILocalStorageService _local;
 
@@ -77,5 +77,13 @@ public class CredentialService
 	public async Task Clear()
 	{
 		await _local.RemoveItemAsync("SftpPreferences");
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (SftpCredentials is { IsValid: true, ShareToken: false })
+		{
+			await _client.PostAsJsonAsync("Auth/logout", SftpCredentials);
+		}
 	}
 }
