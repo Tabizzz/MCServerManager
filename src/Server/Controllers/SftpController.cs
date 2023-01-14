@@ -22,6 +22,39 @@ public class SftpController : ControllerBase
 	}
 
 	[HttpPost]
+	public void CreateEmptyFile([FromBody] SftpCredentials token, [FromQuery] string path, [FromQuery] bool directory)
+	{
+		_logger.LogInformation("Creating empty {Type} \"{Path}\" for {Token}", directory?"directory" : "file", path , token.Token);
+		if (_credentialManager.Obtain(token) is { Token: { } } credentials && 
+		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		{
+			try
+			{
+				var exits = client.Exists(path);
+				if (exits)
+				{
+					Response.StatusCode = (int)HttpStatusCode.NoContent;
+					return;
+				}
+				
+				if(directory)
+					client.CreateDirectory(path);
+				else
+					client.Create(path).Dispose();
+				
+				Response.StatusCode = (int)HttpStatusCode.Accepted;
+				return;
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Error on authentication");
+			}
+		}
+		Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+		
+	}
+
+	[HttpPost]
 	public IEnumerable<SftpFileEntry> ListFiles([FromBody] SftpCredentials token, [FromQuery] string path)
 	{
 		_logger.LogInformation("Listing directory \"{Path}\" for {Token}", path, token.Token);

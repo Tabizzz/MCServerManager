@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
+using MudBlazor;
+using WebServerManager.Client.Dialogs;
 using WebServerManager.Client.Shared;
 using WebServerManager.Shared;
 namespace WebServerManager.Client.Pages;
@@ -63,5 +65,39 @@ public partial class Files : IDisposable
 			return path;
 		}
 		return null!;
+	}
+
+	void CreateFile()
+	{
+		var parameters = new DialogParameters
+		{
+			{ "Path", Path }
+		};
+		var options = new DialogOptions
+		{
+			CloseButton = true,
+			MaxWidth = MaxWidth.Medium,
+			FullWidth = true,
+			Position = DialogPosition.TopCenter
+		};
+		DialogService.Show<FileCreateDialog>($"Create new file",parameters, options);
+		
+	}
+
+	void CreateDirectory()
+	{
+		var parameters = new DialogParameters
+		{
+			{ "Path", Path },
+			{ "Directory", true}
+		};
+		var options = new DialogOptions
+		{
+			CloseButton = true,
+			MaxWidth = MaxWidth.Medium,
+			FullWidth = true,
+			Position = DialogPosition.TopCenter
+		};
+		DialogService.Show<FileCreateDialog>($"Create new directory",parameters, options);
 	}
 }
