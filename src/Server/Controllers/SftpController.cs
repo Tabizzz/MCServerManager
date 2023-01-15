@@ -20,6 +20,28 @@ public class SftpController : ControllerBase
 		_sftpConnectionsManager = sftpConnectionsManager;
 		_logger = logger;
 	}
+
+	public void DeleteFile([FromBody] SftpCredentials token, [FromQuery] string path)
+	{
+		_logger.LogInformation("Deleting file \"{Path}\" for {Token}", path , token.Token);
+		if(path.Equals("/")) return;
+		if (_credentialManager.Obtain(token) is { Token: { } } credentials &&
+		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		{
+			try
+			{
+				client.Delete(path);
+				
+				Response.StatusCode = (int)HttpStatusCode.Accepted;
+				return;
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Error on authentication");
+			}
+		}
+		Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+	}
 	
 	[DisableRequestSizeLimit]
 	[HttpPost]

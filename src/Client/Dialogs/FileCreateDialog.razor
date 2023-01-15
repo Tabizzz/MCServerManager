@@ -7,7 +7,7 @@
 	<DialogContent>
 		<MudTextField 
 			@bind-Value="FileName" 
-			HelperText="@($"The {(Directory?"folder":"file")} will be saved as {System.IO.Path.Combine(Path, FileName)}")"
+			HelperText="@($"The {(Directory?"folder":"file")} will be saved as {System.IO.Path.GetFullPath(FileName, Path)}")"
 			Required="true"
 			RequiredError="@($"{(Directory?"Folder":"File")} Name is required")"
 			Label="@($"{(Directory?"Folder":"File")} Name")"

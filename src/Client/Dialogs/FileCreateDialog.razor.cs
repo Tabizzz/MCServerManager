@@ -30,7 +30,7 @@ public partial class FileCreateDialog
 			_filenamecopy = FileName;
 			StateHasChanged();
 			
-			var toSave = System.IO.Path.Combine(Path, FileName);
+			var toSave = System.IO.Path.GetFullPath(FileName, Path);
 			var urlEncode = HttpUtility.UrlEncode(toSave);
 			var response = await Http.PostAsJsonAsync($"Sftp/CreateEmptyFile?path={urlEncode}&directory={Directory}", CredentialService.SftpCredentials);
 			switch (response.StatusCode)

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Json;
 using System.Web;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -14,7 +15,7 @@ public partial class Files : IDisposable
 {
 	[CascadingParameter] public MainLayout Layout { get; set; } = null!;
 
-	public SftpFileEntry[]? FileEntries { get; set; }
+	public List<SftpFileEntry>? FileEntries { get; set; }
 
 	public bool BackgroundLoadingFiles { get; set; }
 
@@ -28,11 +29,11 @@ public partial class Files : IDisposable
 		NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
 	}
 
-	async Task UpdateFiles()
+	async Task UpdateFiles(bool restore = true)
 	{
 		ValidatePath();
 
-		if (FileSystem.HasEntriesForPath(Path))
+		if (restore && FileSystem.HasEntriesForPath(Path))
 		{
 			FileEntries = FileSystem.GetCacheEntries(Path);
 			BackgroundLoadingFiles = true;
@@ -95,14 +96,7 @@ public partial class Files : IDisposable
 			{ "Path", Path },
 			{ "Directory", true }
 		};
-		var options = new DialogOptions
-		{
-			CloseButton = true,
-			MaxWidth = MaxWidth.Medium,
-			FullWidth = true,
-			Position = DialogPosition.TopCenter
-		};
-		DialogService.Show<FileCreateDialog>($"Create new directory", parameters, options);
+		DialogService.Show<FileCreateDialog>($"Create new directory", parameters);
 	}
 
 	bool _uploading;
@@ -159,5 +153,42 @@ public partial class Files : IDisposable
 		}
 		_uploading = false;
 		StateHasChanged();
+	}
+
+	string GetFileSizeStr(long fileSize)
+	{
+		double size = fileSize;
+		if (size < 1024)
+			return size + " B";
+		size = Math.Round(fileSize / 1024d, 2);
+		if (size < 1024)
+			return size + " KB";
+		size = Math.Round(fileSize / 1024d / 1024d, 2);
+		if (size < 1024)
+			return size + " MB";
+		return size + " GB";
+	}
+
+	MudMessageBox Mbox { get; set; } = null!;
+	
+	async Task DeleteFile(SftpFileEntry file)
+	{
+		var result = await Mbox.Show();
+		if (result.HasValue && result.Value)
+		{
+			FileEntries?.Remove(file);
+			StateHasChanged();
+			var toDelete = HttpUtility.UrlEncode(file.Path);
+			var response = await Http.PostAsJsonAsync($"Sftp/DeleteFile?path={toDelete}", CredentialService.SftpCredentials);
+			if (response.StatusCode == HttpStatusCode.Accepted)
+			{
+				Snackbar.Add((file.IsFolder ? "Folder" : "File") + " deleted", Severity.Success);
+			}
+			else
+			{
+				Snackbar.Add("Unable to delete " + (file.IsFolder ? "folder" : "file"), Severity.Error);
+			}
+			await UpdateFiles(false);
+		}
 	}
 }

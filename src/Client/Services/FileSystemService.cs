@@ -21,7 +21,7 @@ public class FileSystemService
 
 	public bool HasEntriesForPath(string path) => _entriesPerPath.ContainsKey(path);
 	
-	public SftpFileEntry[] GetCacheEntries(string path)
+	public List<SftpFileEntry> GetCacheEntries(string path)
 	{
 		_entriesPerPath[path].Sort((a, b) =>
 		{
@@ -29,10 +29,10 @@ public class FileSystemService
 			return dev == 0 ? string.Compare(a.Name, b.Name, StringComparison.InvariantCulture) : dev;
 		});
 		
-		return _entriesPerPath[path].ToArray();
+		return _entriesPerPath[path].ToList();
 	}
 
-	public async Task<(string, SftpFileEntry[])> UpdatePath(string path)
+	public async Task<(string, List<SftpFileEntry>)> UpdatePath(string path)
 	{
 		var urlEncode = HttpUtility.UrlEncode(path);
 		
@@ -48,6 +48,6 @@ public class FileSystemService
 		{
 			_entriesPerPath.Remove(path);
 		}
-		return (path, Array.Empty<SftpFileEntry>());
+		return (path, new ());
 	}
 }
