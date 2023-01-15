@@ -1,10 +1,12 @@
 @page "/files/{*Path}"
 @using WebServerManager.Client.Services
+@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
 @inherits WebServerManager.Client.Components.PathComponentBase
 @inject CredentialService CredentialService
 @inject NavigationManager NavigationManager
 @inject FileSystemService FileSystem
 @inject IDialogService DialogService
+@inject IWebAssemblyHostEnvironment HostEnvironment
 
 <PageTitle>@Path</PageTitle>
 
@@ -21,28 +23,51 @@
 				<MudIconButton Color="Color.Success" Size="Size.Medium" Icon="@Icons.Material.Filled.Cached"
 				               OnClick="UpdateFiles"/>
 			}
-			<MudButtonGroup OverrideStyles="false" Class="align-center mr-3" Style="white-space: nowrap">
-				<MudButton Color="Color.Default" Variant="Variant.Outlined" Size="Size.Medium" OnClick="CreateDirectory">Create Directory</MudButton>
-				<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium">Upload</MudButton>
-				<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" OnClick="CreateFile">New File</MudButton>
-			</MudButtonGroup>
+			<MudFileUpload T="IBrowserFile" OnFilesChanged="UploadFiles" Class="mt-0">
+				<ButtonTemplate>
+					<MudButtonGroup OverrideStyles="false" Class="align-center mr-3" Style="white-space: nowrap">
+						<MudButton Color="Color.Default" Variant="Variant.Outlined" Size="Size.Medium" OnClick="CreateDirectory">Create Directory</MudButton>
+						<MudButton HtmlTag="label"
+						           Variant="Variant.Filled"
+						           Color="Color.Primary"
+						           for="@context">
+							Upload
+						</MudButton>
+						<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" OnClick="CreateFile">New File</MudButton>
+					</MudButtonGroup>
+				</ButtonTemplate>
+			</MudFileUpload>
 		</MudStack>
 	</MudStack>
 </MudPaper>
 
+<MudOverlay Visible="_uploading" DarkBackground="true">
+	<MudStack Row="false" Justify="Justify.Center" Class="align-center">
+		<MudProgressCircular Color="Color.Info" Class="ms-n1 mr-3" Size="Size.Large" Value="_percentage" Indeterminate="@(_uploaded==_toUpload)"/>
+		@if (_uploaded == _toUpload)
+		{
+			<MudText>Transfering with SFTP please wait</MudText>
+		}
+		else
+		{
+			<MudText>Procesing @(_uploaded / 1024)KB / @(_toUpload / 1024)KB</MudText>
+		}
+	</MudStack>
+	
+</MudOverlay>
 @if (FileEntries != null)
 {
 	<MudList Clickable="true" Dense="true" DisablePadding="true">
 		@foreach (var file in FileEntries)
 		{
 			<MudPaper Elevation="1" Class="mb-1">
-					<MudListItem Href="@(GetLinkFOrFileEntry(file))">
-						<MudStack Row="true" Justify="Justify.FlexStart">
-							<MudIcon Icon="@(file.IsFolder ? Icons.Custom.Uncategorized.Folder : Icons.Custom.FileFormats.FileDocument)"/>
-							<MudText>@file.Name</MudText>
-						</MudStack>
-					</MudListItem>
-				</MudPaper>
+				<MudListItem Href="@(GetLinkFOrFileEntry(file))">
+					<MudStack Row="true" Justify="Justify.FlexStart">
+						<MudIcon Icon="@(file.IsFolder ? Icons.Custom.Uncategorized.Folder : Icons.Custom.FileFormats.FileDocument)"/>
+						<MudText>@file.Name</MudText>
+					</MudStack>
+				</MudListItem>
+			</MudPaper>
 		}
 	</MudList>
 }

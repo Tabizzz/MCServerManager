@@ -20,6 +20,34 @@ public class SftpController : ControllerBase
 		_sftpConnectionsManager = sftpConnectionsManager;
 		_logger = logger;
 	}
+	
+	[DisableRequestSizeLimit]
+	[HttpPost]
+	public void UploadFile([FromForm]IFormFile file, [FromQuery] string path, [FromQuery] string tokenstr)
+	{
+		_logger.LogInformation("Uploading file \"{Path}\" for {Token}", path , tokenstr);
+		var token = new SftpCredentials { Token = tokenstr };
+
+		if (_credentialManager.Obtain(token) is { Token: { } } credentials &&
+		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		{
+			try
+			{
+				using (var fileStream = file.OpenReadStream())
+				{
+					client.UploadFile(fileStream, path, true, _ => { });
+				}
+				
+				Response.StatusCode = (int)HttpStatusCode.Accepted;
+				return;
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Error on authentication");
+			}
+		}
+		Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+	}
 
 	[HttpPost]
 	public void CreateEmptyFile([FromBody] SftpCredentials token, [FromQuery] string path, [FromQuery] bool directory)
@@ -99,7 +127,7 @@ public class SftpController : ControllerBase
 		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
 		{
 			try
-			{ 
+			{
 				client.WriteAllText(request.Path, request.Content);
 				Response.StatusCode = (int)HttpStatusCode.Accepted;
 				return;
