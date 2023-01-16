@@ -55,7 +55,7 @@ public class ProgressiveStreamContent : StreamContent
 				var percentage = Convert.ToDouble(uploaded * 100 / _fileStream.Length);
 
 				// Write the bytes to the HttpContent stream
-				await stream.WriteAsync(buffer);
+				await stream.WriteAsync(buffer, 0, length);
 
 				// Fire the event of OnProgress to notify the client about progress so far
 				OnProgress?.Invoke(uploaded, percentage);

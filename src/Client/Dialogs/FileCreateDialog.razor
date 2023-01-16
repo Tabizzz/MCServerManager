@@ -12,7 +12,8 @@
 			RequiredError="@($"{(Directory?"Folder":"File")} Name is required")"
 			Label="@($"{(Directory?"Folder":"File")} Name")"
 			Immediate="true"
-			FullWidth="true"/>
+			FullWidth="true"
+			Disabled="_creating"/>
 		@if (_existing)
 		{
 			<MudAlert Severity="Severity.Error">The @(Directory?"folder":"file") @_filenamecopy already exists</MudAlert>

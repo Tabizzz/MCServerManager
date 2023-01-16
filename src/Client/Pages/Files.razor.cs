@@ -4,6 +4,7 @@ using System.Web;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.JSInterop;
 using MudBlazor;
 using WebServerManager.Client.Dialogs;
 using WebServerManager.Client.Shared;
@@ -32,6 +33,8 @@ public partial class Files : IDisposable
 	async Task UpdateFiles(bool restore = true)
 	{
 		ValidatePath();
+		FileEntries = null;
+		StateHasChanged();
 
 		if (restore && FileSystem.HasEntriesForPath(Path))
 		{
@@ -52,8 +55,6 @@ public partial class Files : IDisposable
 	{
 		if (!NavigationManager.ToBaseRelativePath(e.Location).StartsWith("files"))
 			return;
-		FileEntries = null;
-		StateHasChanged();
 		InvokeAsync(async () => { await UpdateFiles(); });
 	}
 
@@ -64,12 +65,8 @@ public partial class Files : IDisposable
 
 	string GetLinkFOrFileEntry(SftpFileEntry file)
 	{
-		var path = (file.IsFolder ? "/files" : "raw") + file.Path;
-		if (file.IsFolder || System.IO.Path.GetExtension(file.Path) is ".yml" or ".json" or ".txt" or ".properties")
-		{
-			return path;
-		}
-		return null!;
+		var path = (file.IsFolder ? "/files" : "/raw") + file.Path;
+		return path;
 	}
 
 	void CreateFile()
@@ -189,6 +186,28 @@ public partial class Files : IDisposable
 				Snackbar.Add("Unable to delete " + (file.IsFolder ? "folder" : "file"), Severity.Error);
 			}
 			await UpdateFiles(false);
+		}
+	}
+
+	async Task DownloadFile(SftpFileEntry file)
+	{
+		var path = HttpUtility.UrlEncode(file.Path);
+		var token = HttpUtility.UrlEncode(CredentialService.SftpCredentials.Token);
+		await Js.InvokeVoidAsync("triggerFileDownload", file.Name, $"Sftp/ReadFile?path={path}&tokenstr={token}");
+	}
+
+	async Task RenameFile(SftpFileEntry file)
+	{
+		var parameters = new DialogParameters
+		{
+			{ "Path", Path },
+			{ "Directory", file.IsFolder },
+			{ "Src", file.Path }
+		};
+		var dialog = await DialogService.ShowAsync<RenameDialog>("Rename", parameters);
+		if ((await dialog.Result).Data is true)
+		{
+			await UpdateFiles();
 		}
 	}
 }

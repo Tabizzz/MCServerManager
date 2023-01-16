@@ -1,5 +1,7 @@
 using System.Net;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Renci.SshNet.Sftp;
 using WebServerManager.Server.Services;
 using WebServerManager.Shared;
 namespace WebServerManager.Server.Controllers;
@@ -21,6 +23,36 @@ public class SftpController : ControllerBase
 		_logger = logger;
 	}
 
+	[HttpPost]
+	public void RenameFile([FromBody] SftpCredentials token, [FromQuery] string src, [FromQuery] string dest)
+	{
+		_logger.LogInformation("Renamig file \"{Path}\" to \"{Dest}\" for {Token}", src , dest, token.Token);
+		if(src.Equals("/")) return;
+		if (_credentialManager.Obtain(token) is { Token: { } } credentials &&
+		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		{
+			try
+			{
+				var exits = client.Exists(dest);
+				if (exits)
+				{
+					Response.StatusCode = (int)HttpStatusCode.NoContent;
+					return;
+				}
+				client.RenameFile(src, dest);
+				
+				Response.StatusCode = (int)HttpStatusCode.Accepted;
+				return;
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Error on authentication");
+			}
+		}
+		Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+	}
+	
+	[HttpPost]
 	public void DeleteFile([FromBody] SftpCredentials token, [FromQuery] string path)
 	{
 		_logger.LogInformation("Deleting file \"{Path}\" for {Token}", path , token.Token);
@@ -174,12 +206,10 @@ public class SftpController : ControllerBase
 				{
 					var info = client.Get(path);
 					using var text = client.OpenText(path)!;
-					
 					Response.StatusCode = (int)HttpStatusCode.Accepted;
-					if (info.Length < 5e6)
+					if (info.Length < 2e6)
 						return text.ReadToEnd();
 					Response.StatusCode = (int)HttpStatusCode.InsufficientStorage;
-					
 					return info.Length + ";" + 5e6;
 				}
 			}
@@ -193,9 +223,10 @@ public class SftpController : ControllerBase
 		return string.Empty;
 	}
 
-	[HttpPost]
-	public IActionResult ReadFile([FromBody] SftpCredentials token, [FromQuery] string path)
+	[HttpGet]
+	public IActionResult ReadFile([FromQuery] string tokenstr, [FromQuery] string path)
 	{
+		var token = new SftpCredentials { Token = tokenstr };
 		_logger.LogInformation("Reading file \"{Path}\" for {Token}", path, token.Token);
 		if (_credentialManager.Obtain(token) is not { Token: { } } credentials)
 			return Unauthorized();
@@ -205,7 +236,7 @@ public class SftpController : ControllerBase
 			if (_sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
 			{
 				var filed = client.Get(path);
-				using var file = client.OpenRead(path);
+				var file = client.OpenRead(path);
 				Response.StatusCode = (int)HttpStatusCode.Accepted;
 				return File(file, "application/octet-stream", filed.Name);
 			}
