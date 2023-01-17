@@ -22,6 +22,7 @@ builder.Services.AddMudServices(c =>
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<CredentialService>();
 builder.Services.AddScoped<FileSystemService>();
+builder.Services.AddScoped<ServerPropertiesService>();
 builder.Services.AddMessagePipe();
 
 var host = builder.Build();

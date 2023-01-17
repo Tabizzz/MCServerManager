@@ -1,0 +1,123 @@
+@page "/server/properties"
+@using WebServerManager.Client.Services
+@using System.Text.RegularExpressions
+@using System.Reflection
+@using System.ComponentModel
+@using System.ComponentModel.DataAnnotations
+@using WebServerManager.Client.Models.Enums
+@inject CredentialService CredentialService
+@inject ServerPropertiesService PropertiesService
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+
+<PageTitle>Server Properties</PageTitle>
+
+<MudPaper Elevation="3" Class="mb-4 mud-dark px-2 py-1">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" Class="align-center">
+		<MudStack Row="true" Class="align-center">
+			<MudTextField Immediate="true"
+            		              @bind-Value="_filter"
+            		              Placeholder="Search"
+            		              Variant="Variant.Outlined"
+            		              Adornment="Adornment.End"
+            		              AdornmentIcon="@Icons.Material.Filled.Search"
+            		              FullWidth="false"
+            		              Margin="Margin.Dense"/>
+			<MudCheckBox @bind-Checked="_docs" Label="Show Docs"/>
+		</MudStack>
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" Class="mr-3" OnClick="SaveFile">
+			@if (_saving)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                <MudText Class="ms-2">Saving</MudText>
+            }
+            else
+            {
+                <MudText>Save</MudText>
+            }
+		</MudButton>
+	</MudStack>
+</MudPaper>
+
+@if (PropertiesService.Properties is not null)
+{
+	foreach (var property in PropertiesService.Present().Where(s=> string.IsNullOrWhiteSpace(_filter) || (s.Name.ToLower().Contains(_filter.ToLower()) || Regex.Replace(s.Name, "(\\B[A-Z])", " $1").ToLower().Contains(_filter.ToLower()))))
+	{
+		<MudPaper Elevation="3" Class="@(_docs?"mb-2 pa-2":"mb-1 px-2 py-1")">
+			@if (_docs)
+			{
+				<MudText Typo="Typo.h5" Color="Color.Primary">
+					@Regex.Replace(property.Name, "(\\B[A-Z])", " $1")
+				</MudText>
+				<MudText>
+					@((MarkupString)property.GetCustomAttribute<DescriptionAttribute>()?.Description!)
+				</MudText>
+			}
+			@if (property.PropertyType == typeof(string))
+			{
+				<MudTextField T="string" 
+				              Text="@((string)property.GetMethod?.Invoke(PropertiesService.Properties, null)!)" 
+				              Label="@(property.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName)"
+				              TextChanged="@(v => property.SetMethod?.Invoke(PropertiesService.Properties, new object?[]{ v }))"/>
+			}
+			else if (property.PropertyType == typeof(bool?))
+            {
+	            <MudCheckBox T="bool" 
+	                         Dense="true"
+	                         Checked="@((bool)property.GetMethod?.Invoke(PropertiesService.Properties, null)!)" 
+	                         Label="@(property.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName)"
+	                         CheckedChanged="@(v => property.SetMethod?.Invoke(PropertiesService.Properties, new object?[]{ v }))"/>
+            }
+			else if (property.PropertyType == typeof(int?))
+            {
+	            <MudNumericField T="int?"
+	                             Value="@((int)property.GetMethod?.Invoke(PropertiesService.Properties, null)!)" 
+	                             Label="@(property.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName)"
+	                             ValueChanged="@(v => property.SetMethod?.Invoke(PropertiesService.Properties, new object?[]{ v }))"
+	                             Min="@((int?)property.GetCustomAttribute<RangeAttribute>()?.Minimum)"
+	                             Max="@((int?)property.GetCustomAttribute<RangeAttribute>()?.Maximum)"/>
+            }
+			else if (property.PropertyType == typeof(long?))
+            {
+                <MudNumericField T="long?"
+                                 Value="@((long)property.GetMethod?.Invoke(PropertiesService.Properties, null)!)" 
+                                 Label="@(property.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName)"
+                                 ValueChanged="@(v => property.SetMethod?.Invoke(PropertiesService.Properties, new object?[]{ v }))"
+                                 Min="-1"
+                                 Max="@(long.MaxValue - 1)"/> // change this
+            }
+			else if (property.PropertyType == typeof(ServerDifficulty?))
+			{
+				<MudSelect T="ServerDifficulty?"
+				           Value="PropertiesService.Properties.Difficulty"
+				           Label="@(property.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName)"
+				           ValueChanged="v=>PropertiesService.Properties.Difficulty = v">
+					@foreach (var difficulty in Enum.GetValues<ServerDifficulty>())
+					{
+						<MudSelectItem T="ServerDifficulty?" Value="difficulty" />
+					}
+				</MudSelect>
+			}
+			else if (property.PropertyType == typeof(ServerGamemode?))
+            {
+            	<MudSelect T="ServerGamemode?"
+            	           Value="PropertiesService.Properties.Gamemode"
+            	           Label="@(property.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName)"
+            	           ValueChanged="v=>PropertiesService.Properties.Gamemode = v">
+            		@foreach (var difficulty in Enum.GetValues<ServerGamemode>())
+            		{
+            			<MudSelectItem T="ServerGamemode?" Value="difficulty" />
+            		}
+            	</MudSelect>
+            }
+			
+			</MudPaper>
+			
+	}
+}
+else
+{
+	<MudText>Reading</MudText>
+
+}

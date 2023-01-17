@@ -22,7 +22,9 @@ public class SftpConnectionsManager : IAsyncRunnable
 	{
 		if (_credentialManager.Obtain(key) is not { Token: { } } credentials)
 			return null;
-		
+		if (_clientDictionary.TryGetValue(key, out var value))
+			return value.connection;
+
 		var client = new SftpClient(credentials.Host, credentials.Port, credentials.User, credentials.Password);
 		client.Connect();
 		

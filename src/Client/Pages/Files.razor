@@ -48,7 +48,7 @@
 @if (FileEntries != null)
 {
 	<MudList Clickable="true" Dense="true" DisablePadding="true">
-		<Virtualize Context="file" Items="FileEntries" >
+		<Virtualize Context="file" Items="FileEntries" OverscanCount="6">
 			<MudPaper Elevation="1" Class="mb-1">
 				<MudListItem Href="@(GetLinkFOrFileEntry(file))">
 					<MudStack Row="true" Justify="Justify.SpaceBetween">
