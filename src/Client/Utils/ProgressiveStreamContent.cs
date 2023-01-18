@@ -1,5 +1,5 @@
 using System.Net;
-namespace WebServerManager.Client.Utils;
+namespace MCServerManager.Client.Utils;
 // based on https://www.c-sharpcorner.com/article/custom-inputfile-with-progress-using-blazor-webassembly-asp-net-core-api/
 public class ProgressiveStreamContent : StreamContent
 {

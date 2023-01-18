@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-namespace WebServerManager.Client.Components;
+namespace MCServerManager.Client.Components;
 
 public class PathComponentBase : ComponentBase
 {

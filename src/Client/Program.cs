@@ -1,11 +1,11 @@
 using Blazored.LocalStorage;
+using MCServerManager.Client;
+using MCServerManager.Client.Services;
 using MessagePipe;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
-using WebServerManager.Client;
-using WebServerManager.Client.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

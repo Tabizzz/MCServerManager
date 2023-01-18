@@ -1,5 +1,5 @@
-using WebServerManager.Server.Abstractions;
-namespace WebServerManager.Server.Services;
+using MCServerManager.Server.Abstractions;
+namespace MCServerManager.Server.Services;
 
 public class MonitoringService<T> : BackgroundService where T : IAsyncRunnable
 {

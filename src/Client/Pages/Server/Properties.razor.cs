@@ -1,11 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+using MCServerManager.Client.Shared;
+using MCServerManager.Shared;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using WebServerManager.Client.Models;
-using WebServerManager.Client.Shared;
-using WebServerManager.Shared;
-namespace WebServerManager.Client.Pages.Server;
+namespace MCServerManager.Client.Pages.Server;
 
 public partial class Properties
 {

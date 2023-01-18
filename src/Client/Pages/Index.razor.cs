@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
+using MCServerManager.Client.Services;
+using MCServerManager.Shared;
 using Microsoft.AspNetCore.Components;
-using WebServerManager.Client.Services;
-using WebServerManager.Shared;
-namespace WebServerManager.Client.Pages;
+namespace MCServerManager.Client.Pages;
 
 public partial class Index
 {

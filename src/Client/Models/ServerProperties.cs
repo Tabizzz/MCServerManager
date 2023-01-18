@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using WebServerManager.Client.Models.Enums;
-namespace WebServerManager.Client.Models;
+using MCServerManager.Client.Models.Enums;
+namespace MCServerManager.Client.Models;
 
 public class ServerProperties
 {

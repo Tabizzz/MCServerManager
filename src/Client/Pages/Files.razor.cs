@@ -1,16 +1,17 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Web;
+using MCServerManager.Client.Dialogs;
+using MCServerManager.Client.Shared;
+using MCServerManager.Client.Utils;
+using MCServerManager.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
 using MudBlazor;
-using WebServerManager.Client.Dialogs;
-using WebServerManager.Client.Shared;
-using WebServerManager.Client.Utils;
-using WebServerManager.Shared;
-namespace WebServerManager.Client.Pages;
+using RenameDialog = MCServerManager.Client.Dialogs.RenameDialog;
+namespace MCServerManager.Client.Pages;
 
 public partial class Files : IDisposable
 {

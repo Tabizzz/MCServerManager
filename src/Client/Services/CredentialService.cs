@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using Blazored.LocalStorage;
-using WebServerManager.Shared;
-namespace WebServerManager.Client.Services;
+using MCServerManager.Shared;
+namespace MCServerManager.Client.Services;
 
 public class CredentialService : IAsyncDisposable
 {

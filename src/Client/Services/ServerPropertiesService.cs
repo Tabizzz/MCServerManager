@@ -4,9 +4,9 @@ using System.Net.Http.Json;
 using System.Reflection;
 using System.Text;
 using System.Web;
-using WebServerManager.Client.Models;
-using WebServerManager.Client.Models.Enums;
-namespace WebServerManager.Client.Services;
+using MCServerManager.Client.Models;
+using MCServerManager.Client.Models.Enums;
+namespace MCServerManager.Client.Services;
 
 public class ServerPropertiesService
 {

@@ -1,6 +1,6 @@
+using MCServerManager.Shared;
 using MessagePipe;
-using WebServerManager.Shared;
-namespace WebServerManager.Client.Shared;
+namespace MCServerManager.Client.Shared;
 
 public partial class NavMenu
 {

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components.Routing;
-namespace WebServerManager.Client.Shared;
+namespace MCServerManager.Client.Shared;
 
 public partial class MainLayout : IDisposable
 {

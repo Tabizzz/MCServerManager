@@ -3,8 +3,7 @@ using System.Net.Http.Json;
 using System.Web;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using WebServerManager.Client.Services;
-namespace WebServerManager.Client.Dialogs;
+namespace MCServerManager.Client.Dialogs;
 
 public partial class RenameDialog
 {

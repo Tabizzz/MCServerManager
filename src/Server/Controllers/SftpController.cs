@@ -1,10 +1,8 @@
 using System.Net;
-using System.Text;
+using MCServerManager.Server.Services;
+using MCServerManager.Shared;
 using Microsoft.AspNetCore.Mvc;
-using Renci.SshNet.Sftp;
-using WebServerManager.Server.Services;
-using WebServerManager.Shared;
-namespace WebServerManager.Server.Controllers;
+namespace MCServerManager.Server.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]

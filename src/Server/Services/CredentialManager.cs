@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
-using WebServerManager.Shared;
-namespace WebServerManager.Server.Services;
+using MCServerManager.Shared;
+namespace MCServerManager.Server.Services;
 
 // todo: better auth method?
 public class CredentialManager

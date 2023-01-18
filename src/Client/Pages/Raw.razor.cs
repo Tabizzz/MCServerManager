@@ -2,12 +2,12 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Web;
 using BlazorMonaco;
+using MCServerManager.Client.Shared;
+using MCServerManager.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
-using WebServerManager.Client.Shared;
-using WebServerManager.Shared;
-namespace WebServerManager.Client.Pages;
+namespace MCServerManager.Client.Pages;
 
 public partial class Raw : IAsyncDisposable
 {

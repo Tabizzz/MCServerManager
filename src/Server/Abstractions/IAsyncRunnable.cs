@@ -1,4 +1,4 @@
-namespace WebServerManager.Server.Abstractions;
+namespace MCServerManager.Server.Abstractions;
 
 public interface IAsyncRunnable : IAsyncDisposable
 {

@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
+using MCServerManager.Server.Abstractions;
 using Renci.SshNet;
-using WebServerManager.Server.Abstractions;
-namespace WebServerManager.Server.Services;
+namespace MCServerManager.Server.Services;
 
 public class SftpConnectionsManager : IAsyncRunnable
 {

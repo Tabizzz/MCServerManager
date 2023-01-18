@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	<LangVersion>latest</LangVersion>
-	<AssemblyName>WebServerManager</AssemblyName>
 	<SelfContained>false</SelfContained>
+	<RootNamespace>MCServerManager.Server</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\WebServerManager.Client.csproj" />
-    <ProjectReference Include="..\Shared\WebServerManager.Shared.csproj" />
+    <ProjectReference Include="..\Client\MCServerManager.Client.csproj" />
+    <ProjectReference Include="..\Shared\MCServerManager.Shared.csproj" />
   </ItemGroup>
 
 

@@ -1,5 +1,4 @@
-using WebServerManager.Server.Services;
-
+using MCServerManager.Server.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

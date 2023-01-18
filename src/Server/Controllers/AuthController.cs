@@ -1,8 +1,8 @@
 using System.Net;
+using MCServerManager.Server.Services;
+using MCServerManager.Shared;
 using Microsoft.AspNetCore.Mvc;
-using WebServerManager.Server.Services;
-using WebServerManager.Shared;
-namespace WebServerManager.Server.Controllers;
+namespace MCServerManager.Server.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]

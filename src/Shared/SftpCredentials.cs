@@ -1,4 +1,4 @@
-namespace WebServerManager.Shared;
+namespace MCServerManager.Shared;
 
 public class SftpCredentials : ICloneable
 {

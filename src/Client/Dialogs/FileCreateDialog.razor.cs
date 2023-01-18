@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using System.Web;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-namespace WebServerManager.Client.Dialogs;
+namespace MCServerManager.Client.Dialogs;
 
 public partial class FileCreateDialog
 {

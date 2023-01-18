@@ -2,8 +2,8 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http.Json;
 using System.Web;
-using WebServerManager.Shared;
-namespace WebServerManager.Client.Services;
+using MCServerManager.Shared;
+namespace MCServerManager.Client.Services;
 
 public class FileSystemService
 {
