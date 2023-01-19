@@ -1,0 +1,30 @@
+@using MCServerManager.Desktop.Services
+@inject CredentialService CredentialService
+@if (CredentialService.Loaded)
+{
+	<Router AppAssembly="@typeof(App).Assembly">
+		<Found Context="routeData">
+			<RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+			<FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+		</Found>
+		<NotFound>
+			<PageTitle>Not found</PageTitle>
+			<LayoutView Layout="@typeof(MainLayout)">
+				<p role="alert">Sorry, there's nothing at this address.</p>
+			</LayoutView>
+		</NotFound>
+	</Router>
+}
+else
+{
+	<MudText>Loading...</MudText>
+}
+@code
+{
+
+	protected override async Task OnInitializedAsync()
+	{
+		if(!CredentialService.Loaded)
+			await CredentialService.Load();
+	}
+}

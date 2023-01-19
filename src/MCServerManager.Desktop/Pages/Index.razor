@@ -1,0 +1,85 @@
+﻿@page "/"
+@using MessagePipe
+@using MCServerManager.Shared
+@using MCServerManager.Desktop.Controllers
+@inject AuthController Auth
+@inject IAsyncPublisher<SftpCredentials> SftpPublisher
+
+<PageTitle>Authentication</PageTitle>
+<MudGrid>
+	<MudItem xs="6">
+		<MudPaper Class="rounded-lg pa-2 mx-2 my-2">
+			<MudText Typo="Typo.h5">SFTP Credentials</MudText>
+			<MudDivider/>
+			@if (!CredentialService.SftpCredentials.IsValid)
+			{
+				<MudGrid>
+					<MudItem xs="9">
+						<MudTextField Variant="Variant.Filled" Label="Host" Placeholder="0.0.0.0" @bind-Value="CredentialService.SftpCredentials.Host" Class="py-2"
+						              HelperText="The host to connect" Disabled="AuthLoading"/>
+					</MudItem>
+					<MudItem xs="3">
+						<MudNumericField Variant="Variant.Filled" Label="Port" Placeholder="22" @bind-Value="CredentialService.SftpCredentials.Port" Class="py-2"
+						                 Disabled="AuthLoading"/>
+					</MudItem>
+				</MudGrid>
+				<MudTextField Variant="Variant.Filled" Label="Username" @bind-Value="CredentialService.SftpCredentials.User" Class="py-2"
+				              HelperText="The user used to authenticate" Disabled="AuthLoading"/>
+				<MudTextField Variant="Variant.Filled" Label="Password" @bind-Value="CredentialService.SftpCredentials.Password" Class="py-2"
+				              HelperText="The password used to authenticate" InputType="InputType.Password" Disabled="AuthLoading"/>
+				<MudStack Row="true" Justify="Justify.FlexStart" Class="align-center">
+					<MudCheckBox @bind-Checked="CredentialService.SftpCredentials.ShareToken" Label="Share Token"/>
+					<MudTooltip
+						Color="Color.Info"
+						Text="Share the auth token between different browser tabs so you don't have to login to each one">
+						<MudStack Justify="Justify.Center">
+							<MudIcon Size="Size.Small" Icon="@Icons.Material.Outlined.HelpOutline"/>
+						</MudStack>
+					</MudTooltip>
+					<MudCheckBox @bind-Checked="CredentialService.SftpCredentials.SaveCredentials" Label="Remind Credentials"/>
+					<MudTooltip 
+						Color="Color.Info" 
+						Text="Save your credentials so that you are automatically logged in when you are not logged in"
+						Class="d-flex">
+						<MudStack Justify="Justify.Center">
+							<MudIcon Size="Size.Small" Icon="@Icons.Material.Outlined.HelpOutline"/>
+						</MudStack>
+					</MudTooltip>
+				</MudStack>
+				<MudStack Row="true" Justify="Justify.SpaceBetween">
+					@if (string.IsNullOrWhiteSpace(ErrorMessage))
+					{
+						<MudSpacer/>
+					}
+					else
+					{
+						<MudAlert Severity="Severity.Error" Dense="true">@ErrorMessage</MudAlert>
+					}
+					<MudButton Disabled="@AuthLoading" OnClick="OnClickConnect" Variant="Variant.Filled" Color="Color.Primary">
+						@if (AuthLoading)
+						{
+							<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+							<MudText Class="ms-2">Connecting</MudText>
+						}
+						else
+						{
+							<MudText>Connect</MudText>
+						}
+					</MudButton>
+				</MudStack>
+			}
+			else
+			{
+				<MudAlert Severity="Severity.Success">
+						You are logged in as <b>@CredentialService.SftpCredentials.User</b>
+						<MudButton Color="Color.Error" Size="Size.Small" OnClick="Logout">Disconnect</MudButton>
+				</MudAlert>
+			}
+		</MudPaper>
+	</MudItem>
+</MudGrid>
+
+@if (!CredentialService.SftpCredentials.IsValid)
+{
+	<MudAlert Severity="Severity.Info">Currently connections can be made only with SFTP, no FTP or FTPS.</MudAlert>
+}

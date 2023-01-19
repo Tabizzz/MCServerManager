@@ -1,0 +1,37 @@
+@using MCServerManager.Desktop.Services
+@using MCServerManager.Desktop.Controllers
+@using MCServerManager.Desktop.Utils
+@inject SftpController Sftp
+@inject CredentialService CredentialService
+@inject NavigationManager NavigationManager
+
+<MudDialog Style="margin-top: 100px">
+	<DialogContent>
+		<MudTextField 
+			@bind-Value="FileName" 
+			HelperText="@($"The {(Directory?"folder":"file")} will be saved as {PathUtils.GetFullPath(Path, FileName)}")"
+			Required="true"
+			RequiredError="@($"{(Directory?"Folder":"File")} Name is required")"
+			Label="@($"{(Directory?"Folder":"File")} Name")"
+			Immediate="true"
+			FullWidth="true"
+			Disabled="_creating"/>
+		@if (_existing)
+		{
+			<MudAlert Severity="Severity.Error">The @(Directory?"folder":"file") @_filenamecopy already exists</MudAlert>
+		}
+	</DialogContent>
+	<DialogActions>
+		<MudButton Color="Color.Primary" OnClick="Submit" Disabled="_creating">
+			@if (_creating)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                <MudText Class="ms-2">Creating</MudText>
+            }
+            else
+            {
+                <MudText>Create</MudText>
+            }
+		</MudButton>
+	</DialogActions>
+</MudDialog>

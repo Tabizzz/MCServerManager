@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <base href="/" />
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+	<link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+	<link href="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.css" rel="stylesheet" />
+	<link href="css/app.css" rel="stylesheet" />
+	<link rel="icon" type="image/png" href="favicon.png" />
+    <link href="MCServerManager.Desktop.Sample.styles.css" rel="stylesheet" />
+	<title>MC Server Manager</title>
+	<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+	<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+	<link href="manifest.json" rel="manifest" />
+
+</head>
+<body>
+    <app>Loading...</app>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.js"></script>
+    <script>require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.js"></script>
+    <script src="_content/BlazorMonaco/jsInterop.js"></script>
+    <script src="js/app.js"></script>
+    <script src="_framework/blazor.webview.js"></script>
+</body>
+</html>

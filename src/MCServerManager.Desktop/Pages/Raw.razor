@@ -1,0 +1,55 @@
+@page "/raw/{*Path}"
+@using MCServerManager.Desktop.Services
+@using MCServerManager.Desktop.Controllers
+@inherits MCServerManager.Desktop.Components.PathComponentBase
+@inject CredentialService CredentialService
+@inject SftpController Sftp
+@inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
+
+<PageTitle>@Path</PageTitle>
+
+<MudPaper Elevation="3" Class="d-flex flex-grow-1 gap-4 mud-dark" Height="500px">
+	<MudStack Justify="Justify.FlexStart" Class="flex-grow-1" Spacing="0">
+		<MudStack Row="true" Justify="Justify.SpaceBetween" Class="align-center">
+			<MudBreadcrumbs Items="PathItems"/>
+			@if(_loaded)
+			{
+				<MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" Class="mr-3"
+				           OnClick="SaveFile" Disabled="_saving">
+					@if (_saving)
+                    {
+                    	<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                    	<MudText Class="ms-2">Saving</MudText>
+                    }
+                    else
+                    {
+                    	<MudText>Save</MudText>
+                    }
+				</MudButton>
+			}
+		</MudStack>
+        <MudDivider/>
+        @if (!_loaded)
+        {
+	        <MudStack Row="false" Justify="Justify.Center" Class="align-center flex-grow-1">
+                @if (_error is not null)
+                {
+                    <MudAlert Severity="Severity.Error" Dense="true" Style="width: max-content">@_error</MudAlert>
+                }
+                else
+                {
+	                <MudText>Loading file <b>@System.IO.Path.GetFileName(Path)</b></MudText>
+	                <MudProgressLinear Class="ms-n1" Size="Size.Medium" Indeterminate="true" Color="Color.Info" Style="width: 35%" Rounded="true"/>
+                }
+	        </MudStack>
+	        
+        }
+        else
+        {
+	        <MonacoEditor @ref="Editor" Id="raw-code-editor" ConstructionOptions="EditorConstructionOptions" OnDidInit="EditorOnDidInit"/>
+        }
+	</MudStack>
+	
+
+</MudPaper>

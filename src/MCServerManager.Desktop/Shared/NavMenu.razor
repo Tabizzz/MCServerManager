@@ -1,0 +1,17 @@
+﻿@using MessagePipe
+@using MCServerManager.Shared
+@using MCServerManager.Desktop.Services
+@inject CredentialService CredentialService
+@inject IAsyncSubscriber<SftpCredentials> SftpSubscriber
+@implements IDisposable
+
+<MudNavMenu Bordered="true">
+	<MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Person">Authentication</MudNavLink>
+	@if (CredentialService.SftpCredentials.IsValid)
+	{
+		<MudNavLink Href="files" Match="NavLinkMatch.Prefix" Icon="@Icons.Custom.Uncategorized.Folder">Filesystem</MudNavLink>
+		<MudNavGroup Title="Server Settings" Icon="@Icons.Material.Filled.Settings">
+			<MudNavLink Href="server/properties" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.MiscellaneousServices">Properties</MudNavLink>
+		</MudNavGroup>
+	}
+</MudNavMenu>
