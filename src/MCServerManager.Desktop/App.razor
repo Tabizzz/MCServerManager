@@ -17,7 +17,19 @@
 }
 else
 {
-	<MudText>Loading...</MudText>
+	<MudThemeProvider IsDarkMode="true"></MudThemeProvider>
+	<style>
+		html, body, app {
+			height: 100%;
+		}
+		app {
+			display: block;
+		}
+	</style>
+	<MudStack Justify="Justify.Center" Class="align-center" Style="height: 100%">
+		<MudProgressCircular Indeterminate="true" Size="Size.Large" Color="Color.Primary"/>
+		<MudText>Loading servers</MudText>
+	</MudStack>
 }
 @code
 {

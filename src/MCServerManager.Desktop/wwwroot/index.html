@@ -17,7 +17,37 @@
 
 </head>
 <body>
-    <app>Loading...</app>
+	<app>
+		<style>
+	        :root{
+	            --mud-palette-primary: #776be7ff;
+	            --mud-palette-text-primary: #ffffffb2;
+	            --mud-palette-background: #32333dff;
+	            --mud-typography-body1-family: 'Roboto','Helvetica','Arial','sans-serif';
+	            --mud-typography-body1-size: 1rem;
+	            --mud-typography-body1-weight: 400;
+	            --mud-typography-body1-lineheight: 1.5;
+	            --mud-typography-body1-letterspacing: .00938em;
+	            --mud-typography-body1-text-transform: none;
+	        }
+		</style>
+		<style>
+	        html, body, app {
+	            height: 100%;
+	        }
+	        app {
+	            display: block;
+	        }
+		</style>
+		<div class="d-flex flex-column justify-center gap-3 align-center" style="height: 100%"><!--!-->
+			<div class="mud-progress-circular mud-primary-text mud-progress-large mud-progress-indeterminate" role="progressbar" aria-valuenow="0">
+				<svg class="mud-progress-circular-svg" viewBox="22 22 44 44">
+					<circle class="mud-progress-circular-circle mud-progress-indeterminate" cx="44" cy="44" r="20" fill="none" stroke-width="3"/>
+				</svg>
+			</div>
+			<p class="mud-typography mud-typography-body1">Loading app</p>
+		</div>
+	</app>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
