@@ -1,7 +1,7 @@
 using System.Net;
 using Blazored.LocalStorage;
 using MCServerManager.Desktop.Controllers;
-using MCServerManager.Shared;
+using MCServerManager.Desktop.Models;
 namespace MCServerManager.Desktop.Services;
 
 public class CredentialService : IDisposable

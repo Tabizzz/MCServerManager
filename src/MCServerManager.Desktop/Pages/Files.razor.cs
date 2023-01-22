@@ -1,8 +1,8 @@
 using System.Net;
 using MCServerManager.Desktop.Components.Dialogs;
+using MCServerManager.Desktop.Models;
 using MCServerManager.Desktop.Shared;
 using MCServerManager.Desktop.Utils;
-using MCServerManager.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Routing;

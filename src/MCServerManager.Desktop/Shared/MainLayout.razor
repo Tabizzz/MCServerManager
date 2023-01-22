@@ -4,23 +4,34 @@
 @inject NavigationManager NavigationManager
 
 <MudThemeProvider IsDarkMode="true"/>
-<MudDialogProvider CloseOnEscapeKey="true" Position="DialogPosition.TopCenter" CloseButton="true" FullWidth="true" MaxWidth="MaxWidth.Medium"/>
+<MudDialogProvider CloseButton="true"
+				   CloseOnEscapeKey="true"
+				   FullWidth="true"
+				   MaxWidth="MaxWidth.Medium"
+				   Position="DialogPosition.TopCenter"/>
 <MudSnackbarProvider/>
 
 <MudLayout>
-	<MudAppBar Elevation="0">
+	<MudAppBar Elevation="0" Dense="true" Fixed="true" DisableGutters="true" Class="px-1">
+		<MudToggleIconButton @bind-Toggled="@_drawerOpen"
+							 Icon="@Icons.Material.Filled.Menu"
+							 ToggledIcon="@Icons.Material.Filled.MenuOpen"/>
 		<MudSpacer/>
-		<MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank"/>
-		<MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank"/>
+		<MudIconButton Color="Color.Inherit"
+					   Icon="@Icons.Custom.Brands.GitHub"
+					   Link="https://github.com/Tabizzz/MCServerManager/tree/desktop"
+					   Target="_blank"/>
 	</MudAppBar>
-	<MudDrawer Open="true" Elevation="1">
-		<MudDrawerHeader>
-			<MudText Typo="Typo.h6">Web Server Manager</MudText>
-		</MudDrawerHeader>
+	<MudDrawer @bind-Open="@_drawerOpen"
+			   ClipMode="DrawerClipMode.Always"
+			   Elevation="1"
+			   PreserveOpenState="true"
+			   Variant="DrawerVariant.Mini"
+			   Width="150px">
 		<NavMenu/>
 	</MudDrawer>
 	<MudMainContent>
-		<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="px-16 pt-8">
+		<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4">
 			<CascadingValue Value="this">
 				@if (!RequireSftp || (RequireSftp && CredentialService.SftpCredentials.IsValid))
 				{

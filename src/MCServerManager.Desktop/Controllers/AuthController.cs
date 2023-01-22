@@ -1,6 +1,6 @@
 using System.Net;
 using MCServerManager.Desktop.Managers;
-using MCServerManager.Shared;
+using MCServerManager.Desktop.Models;
 using Microsoft.Extensions.Logging;
 namespace MCServerManager.Desktop.Controllers;
 

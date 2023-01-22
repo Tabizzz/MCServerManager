@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
 using MCServerManager.Desktop.Shared;
-using MCServerManager.Shared;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 namespace MCServerManager.Desktop.Pages.Server;

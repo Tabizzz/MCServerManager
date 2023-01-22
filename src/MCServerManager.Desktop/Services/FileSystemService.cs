@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Web;
 using MCServerManager.Desktop.Controllers;
-using MCServerManager.Shared;
+using MCServerManager.Desktop.Models;
 namespace MCServerManager.Desktop.Services;
 
 public class FileSystemService

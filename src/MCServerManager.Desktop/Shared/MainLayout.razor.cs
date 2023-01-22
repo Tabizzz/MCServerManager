@@ -3,6 +3,8 @@ namespace MCServerManager.Desktop.Shared;
 
 public partial class MainLayout : IDisposable
 {
+	bool _drawerOpen;
+
 	public bool RequireSftp { get; set; }
 
 	protected override void OnAfterRender(bool firstRender)
@@ -25,5 +27,10 @@ public partial class MainLayout : IDisposable
 	public void Dispose()
 	{
 		NavigationManager.LocationChanged -= NavigationManagerOnLocationChanged;
+	}
+
+	void ToggleDrawer()
+	{
+		_drawerOpen = !_drawerOpen;
 	}
 }

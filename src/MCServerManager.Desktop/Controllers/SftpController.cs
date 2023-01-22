@@ -1,8 +1,8 @@
 using System.Net;
 using MCServerManager.Desktop.Managers;
+using MCServerManager.Desktop.Models;
 using MCServerManager.Desktop.Utils;
 using MCServerManager.Desktop.Utils.Extensions;
-using MCServerManager.Shared;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
 namespace MCServerManager.Desktop.Controllers;

@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using MCServerManager.Shared;
+using MCServerManager.Desktop.Models;
 namespace MCServerManager.Desktop.Managers;
 
 // todo: better auth method?
