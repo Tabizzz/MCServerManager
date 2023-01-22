@@ -1,4 +1,12 @@
-﻿.monaco-editor-container {
+﻿html, body, app {
+    height: 100%;
+}
+
+app {
+    display: block;
+}
+
+.monaco-editor-container {
     height: 100%;
 }
 
