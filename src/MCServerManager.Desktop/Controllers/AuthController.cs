@@ -36,30 +36,27 @@ public class AuthController
 			_sftpConnectionsManager.DeleteConnection(credentials.Token!);
 	}
 
-	public Task<SftpCredentials> Login(SftpCredentials credentials)
+	public Task<SftpCredentials> Login(SftpCredentials credentials) => Task.Run<SftpCredentials>(()=>
 	{
-		return Task.Run<SftpCredentials>(()=>
+		_logger.LogInformation("Login user {Token}", credentials.User);
+		try
 		{
-			_logger.LogInformation("Login user {Token}", credentials.User);
-			try
+			var tosave = _credentialManager.Login(credentials);
+			_sftpConnectionsManager.CreateConnection(tosave.Token!);
+			StatusCode = HttpStatusCode.Accepted;
+			return new()
 			{
-				var tosave = _credentialManager.Login(credentials);
-				_sftpConnectionsManager.CreateConnection(tosave.Token!);
-				StatusCode = HttpStatusCode.Accepted;
-				return new()
-				{
-					Token = tosave.Token
-				};
-			}
-			catch (Exception e)
+				Token = tosave.Token
+			};
+		}
+		catch (Exception e)
+		{
+			_logger.LogError(e, "Error on authentication");
+			StatusCode = HttpStatusCode.Unauthorized;
+			return new()
 			{
-				_logger.LogError(e, "Error on authentication");
-				StatusCode = HttpStatusCode.Unauthorized;
-				return new()
-				{
-					Token = e.Message == "username" ? "Invalid username" : e.Message
-				};
-			}
-		});
-	}
+				Token = e.Message == "username" ? "Invalid username" : e.Message
+			};
+		}
+	});
 }

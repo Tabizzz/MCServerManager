@@ -31,7 +31,7 @@
 		<NavMenu/>
 	</MudDrawer>
 	<MudMainContent Style="height: 100%">
-		<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4" Style="min-height: 100%">
+		<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4" Style="height: 100%">
 			<CascadingValue Value="this">
 				@if (!RequireSftp || (RequireSftp && CredentialService.SftpCredentials.IsValid))
 				{

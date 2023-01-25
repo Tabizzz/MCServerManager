@@ -1,0 +1,21 @@
+﻿@page "/"
+@using MCServerManager.Desktop.Managers
+@inject ServerManager ServerManager
+@inject IDialogService DialogService
+
+@if (ServerManager.ServerCount > 0)
+{
+	
+}
+else
+{
+	<MudStack Justify="Justify.Center" Class="align-center" Style="height: 100%">
+		<MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.ManageSearch" Style="font-size: 6rem;"/>
+		<MudText>You have not servers</MudText>
+		<MudButton Color="Color.Primary"
+		           Variant="Variant.Filled"
+		           OnClick="OpenCreateServerDialog">
+			Add Server
+		</MudButton>
+	</MudStack>
+}

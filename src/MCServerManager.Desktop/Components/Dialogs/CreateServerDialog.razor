@@ -1,0 +1,49 @@
+﻿<MudDialog>
+	<DialogContent>
+		<MudDivider/>
+		<MudTextField @bind-Value="@_server.Name"
+		              Immediate="true"
+		              Label="Server name"
+		              Required="true"
+		              HelperText="The display name to show on this server"
+		              Placeholder="ExampleCraft"/>
+		<MudStack Row="true">
+			<MudTextField @bind-Value="@_server.Ip"
+			              FullWidth="true"
+			              Immediate="true"
+			              Label="Server ip"
+			              Required="true"
+			              HelperText="The ip of the server"
+			              Placeholder="play.examplecraft.com"/>
+			<MudNumericField @bind-Value="@_server.Port"
+							 HelperText="Port of the server"
+							 Immediate="true"
+							 Label="Port"
+							 Placeholder="25565"/>
+		</MudStack>
+	</DialogContent>
+	<DialogActions>
+		<DialogActions>
+			@if (_page > 0)
+			{
+				<MudButton OnClick="Back">
+					Back
+				</MudButton>
+			}
+			<MudButton Color="Color.Primary" OnClick="Submit">
+				@switch (_page)
+				{
+					case 0:
+						@:Next
+						break;
+					case 1:
+						@:Validate
+						break;
+					case 2:
+						@:Save
+						break;
+				}
+			</MudButton>
+		</DialogActions>
+	</DialogActions>
+</MudDialog>

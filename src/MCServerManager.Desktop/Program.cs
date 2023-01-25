@@ -34,6 +34,7 @@ class Program
 		appBuilder.Services.AddMessagePipe();
 		appBuilder.Services.AddScoped<CredentialService>();
 		appBuilder.Services.AddScoped<FileSystemService>();
+		appBuilder.Services.AddScoped<ServerManager>();
 		appBuilder.Services.AddScoped<ServerPropertiesService>();
 		
 		appBuilder.Services.AddSingleton<CredentialManager>();
@@ -53,7 +54,11 @@ class Program
 		// customize window
 		app.MainWindow
 			.SetIconFile("favicon.ico")
+#if DEBUG
+			.SetTitle("MC Server Manager (Debug)")
+#else
 			.SetTitle("MC Server Manager")
+#endif
 			.Center()
 			.SetUseOsDefaultSize(true);
 
