@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 using MCServerManager.Desktop.Managers;
 using MCServerManager.Desktop.Models;
 using MCServerManager.Desktop.Utils;
@@ -11,35 +12,38 @@ public class SftpController
 {
 	readonly ILogger<SftpController> _logger;
 
-	readonly CredentialManager _credentialManager;
+	readonly ServerManager _serverManager;
 
 	readonly SftpConnectionsManager _sftpConnectionsManager;
 	
 	public HttpStatusCode StatusCode { get; private set; }
 
-	public SftpController(ILogger<SftpController> logger, CredentialManager credentialManager, SftpConnectionsManager sftpConnectionsManager)
+	public SftpController(ILogger<SftpController> logger, ServerManager serverManager, SftpConnectionsManager sftpConnectionsManager)
 	{
-		_credentialManager = credentialManager;
+		_serverManager = serverManager;
 		_sftpConnectionsManager = sftpConnectionsManager;
 		_logger = logger;
 	}
 
-	public Task RenameFile(SftpCredentials token, string src, string dest) => Task.Run(() =>
+	public async Task RenameFile(Guid id, string src, string dest)
 	{
-		_logger.LogInformation("Renamig file \"{Path}\" to \"{Dest}\" for {Token}", src, dest, token.Token);
+		_logger.LogInformation("Renamig file \"{Path}\" to \"{Dest}\" for {Token}", src, dest, id);
 		if (src.Equals("/")) return;
-		if (_credentialManager.Obtain(token) is { Token: { } } credentials &&
-		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		if (_serverManager[id] is { Sftp: { } } &&
+		    await _sftpConnectionsManager.GetConnection(id) is { } client)
 		{
 			try
 			{
-				var exits = client.Exists(dest);
-				if (exits)
+				await Task.Run(() =>
 				{
-					StatusCode = HttpStatusCode.NoContent;
-					return;
-				}
-				client.RenameFile(src, dest);
+					var exits = client.Exists(dest);
+					if (exits)
+					{
+						StatusCode = HttpStatusCode.NoContent;
+						return;
+					}
+					client.RenameFile(src, dest);
+				});
 
 				StatusCode = HttpStatusCode.Accepted;
 				return;
@@ -49,20 +53,20 @@ public class SftpController
 				_logger.LogError(e, "Error on authentication");
 			}
 		}
-
+		
 		StatusCode = HttpStatusCode.Unauthorized;
-	});
+	}
 
-	public Task DeleteFile(SftpCredentials token, string path) => Task.Run(() =>
+	public async Task DeleteFile(Guid id, string path)
 	{
-		_logger.LogInformation("Deleting file \"{Path}\" for {Token}", path , token.Token);
+		_logger.LogInformation("Deleting file \"{Path}\" for {Token}", path , id);
 		if(path.Equals("/")) return;
-		if (_credentialManager.Obtain(token) is { Token: { } } credentials &&
-		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		if (_serverManager[id] is { Sftp: { } } &&
+		    await _sftpConnectionsManager.GetConnection(id) is { } client)
 		{
 			try
 			{
-				client.Delete(path);
+				await TaskUtils.Run(client.Delete, path);
 				
 				StatusCode = HttpStatusCode.Accepted;
 				return;
@@ -73,30 +77,28 @@ public class SftpController
 			}
 		}
 		StatusCode = HttpStatusCode.Unauthorized;
-	});
+	}
 
 	
-	public async Task UploadFile(IBrowserFile file, string path, SftpCredentials token, Action<ulong> action)
+	public async Task UploadFile(IBrowserFile file, string path, Guid id, Action<ulong> action)
 	{
-		_logger.LogInformation("Uploading file \"{Path}\" for {Token}", path , token.Token);
+		_logger.LogInformation("Uploading file \"{Path}\" for {Token}", path , id);
 
-		if (_credentialManager.Obtain(token) is { Token: { } } credentials &&
-		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		if (_serverManager[id] is { Sftp: { } } &&
+		    await _sftpConnectionsManager.GetConnection(id) is { } client)
 		{
 			try
 			{
-				await using (var fileStream = file.OpenReadStream(long.MaxValue))
-				{
-					var input = new StreamAdapter(fileStream);
+				await using var fileStream = file.OpenReadStream(long.MaxValue);
+				var input = new StreamAdapter(fileStream);
 
-					await Task.Factory.FromAsync(
-						(a,b, c, d, e)=> client.BeginUploadFile(a, b, true, d, e, c), 
-						client.EndUploadFile, 
-						input, 
-						path, 
-						action, 
-						null);
-				}
+				await Task.Factory.FromAsync(
+					(a,b, c, d, e)=> client.BeginUploadFile(a, b, true, d, e, c), 
+					client.EndUploadFile, 
+					input, 
+					path, 
+					action, 
+					null);
 				StatusCode = HttpStatusCode.Accepted;
 				return;
 			}
@@ -108,15 +110,15 @@ public class SftpController
 		StatusCode = HttpStatusCode.Unauthorized;
 	}
 
-	public Task CreateEmptyFile(SftpCredentials token, string path, bool directory) => Task.Run(() =>
+	public async Task CreateEmptyFile(Guid id, string path, bool directory)
 	{
-		_logger.LogInformation("Creating empty {Type} \"{Path}\" for {Token}", directory ? "directory" : "file", path, token.Token);
-		if (_credentialManager.Obtain(token) is { Token: { } } credentials &&
-		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		_logger.LogInformation("Creating empty {Type} \"{Path}\" for {Token}", directory ? "directory" : "file", path, id);
+		if (_serverManager[id] is { Sftp: { } } &&
+		    await _sftpConnectionsManager.GetConnection(id) is { } client)
 		{
 			try
 			{
-				var exits = client.Exists(path);
+				var exits = await TaskUtils.Run(client.Exists, path);
 				if (exits)
 				{
 					StatusCode = HttpStatusCode.NoContent;
@@ -126,7 +128,7 @@ public class SftpController
 				if (directory)
 					client.CreateDirectory(path);
 				else
-					client.Create(path).Dispose();
+					await client.Create(path).DisposeAsync();
 
 				StatusCode = HttpStatusCode.Accepted;
 				return;
@@ -139,30 +141,28 @@ public class SftpController
 
 		StatusCode = HttpStatusCode.Unauthorized;
 
-	});
+	}
 
-	public async Task<IEnumerable<SftpFileEntry>> ListFiles( SftpCredentials token,  string path)
+	public async Task<IEnumerable<SftpFileEntry>> ListFiles(Guid id,  string path)
 	{
-		_logger.LogInformation("Listing directory \"{Path}\" for {Token}", path, token.Token);
+		_logger.LogInformation("Listing directory \"{Path}\" for {Token}", path, id);
 
-		if (_credentialManager.Obtain(token) is { Token: { } } credentials)
+		if (_serverManager[id] is { Sftp: { } } &&
+		    await _sftpConnectionsManager.GetConnection(id) is { } client)
 		{
 			try
 			{
-				if (_sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
-				{
-					var files = await client.ListDirectoryAsync(path);
+				var files = await client.ListDirectoryAsync(path);
 
-					StatusCode = HttpStatusCode.Accepted;
-					return files.Select(f => new SftpFileEntry
-					{
-						Path = f.FullName,
-						IsFolder = f.IsDirectory,
-						Size = f.Length,
-						Name = f.Name,
-						LastWrite = f.LastWriteTime
-					});
-				}
+				StatusCode = HttpStatusCode.Accepted;
+				return files.Select(f => new SftpFileEntry
+				{
+					Path = f.FullName,
+					IsFolder = f.IsDirectory,
+					Size = f.Length,
+					Name = f.Name,
+					LastWrite = f.LastWriteTime
+				});
 			}
 			catch (Exception e)
 			{
@@ -178,15 +178,16 @@ public class SftpController
 		return Array.Empty<SftpFileEntry>();
 	}
 
-	public Task UpdateRawText(string path, SftpCredentials token, string content) => Task.Run(() =>
+	public async Task UpdateRawText(string path, Guid id, string content)
 	{
-		_logger.LogInformation("Updating text file \"{Path}\" for {Token}", path, token.Token);
-		if (_credentialManager.Obtain(token) is { Token: { } } credentials &&
-		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		_logger.LogInformation("Updating text file \"{Path}\" for {Token}", path, id);
+		if (_serverManager[id] is { Sftp: { } } &&
+		    await _sftpConnectionsManager.GetConnection(id) is { } client)
 		{
 			try
 			{
-				client.WriteAllText(path, content);
+				await using var writer = new StreamWriter(client.OpenWrite(path), Encoding.UTF8);
+				await writer.WriteAsync(content);
 				StatusCode = HttpStatusCode.Accepted;
 				return;
 			}
@@ -196,25 +197,23 @@ public class SftpController
 			}
 		}
 		StatusCode = HttpStatusCode.Unauthorized;
-	});
+	}
 
-	public Task<string> RawText(SftpCredentials token, string path) => Task.Run(() =>
+	public async Task<string> RawText(Guid id, string path)
 	{
-		_logger.LogInformation("Reading text file \"{Path}\" for {Token}", path, token.Token);
-		if (_credentialManager.Obtain(token) is { Token: { } } credentials)
+		_logger.LogInformation("Reading text file \"{Path}\" for {Token}", path, id);
+		if (_serverManager[id] is { Sftp: { } } &&
+		    await _sftpConnectionsManager.GetConnection(id) is { } client)
 		{
 			try
 			{
-				if (_sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
-				{
-					var info = client.Get(path);
-					using var text = client.OpenText(path)!;
-					StatusCode = HttpStatusCode.Accepted;
-					if (info.Length < 2e6)
-						return text.ReadToEnd();
-					StatusCode = HttpStatusCode.InsufficientStorage;
-					return info.Length + ";" + 5e6;
-				}
+				var info = client.Get(path);
+				using var text = client.OpenText(path);
+				StatusCode = HttpStatusCode.Accepted;
+				if (info.Length < 2e6)
+					return await text.ReadToEndAsync();
+				StatusCode = HttpStatusCode.InsufficientStorage;
+				return info.Length + ";" + 5e6;
 			}
 			catch (Exception e)
 			{
@@ -224,14 +223,14 @@ public class SftpController
 
 		StatusCode = HttpStatusCode.Unauthorized;
 		return string.Empty;
-	});
+	}
 	
-	public async Task SaveFile(SftpCredentials token, string path, string localFile, Action<ulong> action)
+	public async Task SaveFile(Guid id, string path, string localFile, Action<ulong> action)
 	{
-		_logger.LogInformation("Reading file \"{Path}\" for {Token}", path, token.Token);
+		_logger.LogInformation("Reading file \"{Path}\" for {Id}", path, id);
 		
-		if (_credentialManager.Obtain(token) is { Token: { } } credentials &&
-		    _sftpConnectionsManager.GetConnection(credentials.Token) is { } client)
+		if (_serverManager[id] is { Sftp: { } } && 
+		    await _sftpConnectionsManager.GetConnection(id) is { } client)
 		{
 			try
 			{

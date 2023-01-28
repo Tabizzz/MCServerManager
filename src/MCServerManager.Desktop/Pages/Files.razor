@@ -1,8 +1,9 @@
 @page "/files/{*Path}"
 @using MCServerManager.Desktop.Services
 @using MCServerManager.Desktop.Controllers
+@using MCServerManager.Desktop.Managers
 @inherits MCServerManager.Desktop.Components.PathComponentBase
-@inject CredentialService CredentialService
+@inject ServerManager ServerManager
 @inject NavigationManager NavigationManager
 @inject FileSystemService FileSystem
 @inject IDialogService DialogService
@@ -45,6 +46,7 @@
 @if (FileEntries != null)
 {
 	<MudList Clickable="true" Dense="true" DisablePadding="true">
+		@* ReSharper disable once UnusedParameter.Local *@
 		<Virtualize Context="file" Items="FileEntries" OverscanCount="6">
 			<MudPaper Elevation="1" Class="mb-1">
 				<MudListItem Href="@(GetLinkFOrFileEntry(file))">

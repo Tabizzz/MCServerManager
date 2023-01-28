@@ -1,17 +1,16 @@
 using System.ComponentModel;
 using System.Net;
-using System.Net.Http.Json;
 using System.Reflection;
 using System.Text;
-using System.Web;
 using MCServerManager.Desktop.Controllers;
+using MCServerManager.Desktop.Managers;
 using MCServerManager.Desktop.Models;
 using MCServerManager.Desktop.Models.Enums;
 namespace MCServerManager.Desktop.Services;
 
 public class ServerPropertiesService
 {
-	readonly CredentialService _credentialService;
+	readonly ServerManager _serverManager;
 
 	readonly SftpController _sftp;
 
@@ -19,9 +18,9 @@ public class ServerPropertiesService
 
 	int _estimatedSize;
 
-	public ServerPropertiesService(CredentialService credentialService, SftpController sftp)
+	public ServerPropertiesService(ServerManager serverManager, SftpController sftp)
 	{
-		_credentialService = credentialService;
+		_serverManager = serverManager;
 		_sftp = sftp;
 		Properties = null;
 	}
@@ -34,7 +33,10 @@ public class ServerPropertiesService
 
 	async Task Reload()
 	{
-		var response = await _sftp.RawText(_credentialService.SftpCredentials, "/server.properties");
+		if (_serverManager.CurrentServer is null)
+			return;
+		
+		var response = await _sftp.RawText(_serverManager.CurrentServer.Id, "/server.properties");
 		if (_sftp.StatusCode == HttpStatusCode.Accepted)
 		{
 			_estimatedSize = response.Length;

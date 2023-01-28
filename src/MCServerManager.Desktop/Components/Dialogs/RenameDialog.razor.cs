@@ -1,6 +1,4 @@
 using System.Net;
-using System.Net.Http.Json;
-using System.Web;
 using MCServerManager.Desktop.Utils;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -30,14 +28,14 @@ public partial class RenameDialog
 
 	async Task Submit()
 	{
-		if (!string.IsNullOrWhiteSpace(NewName))
+		if (!string.IsNullOrWhiteSpace(NewName) && ServerManager.CurrentServer is not null)
 		{
 			_renaming = true;
 			_existing = false;
 			_filenamecopy = NewName;
 			StateHasChanged();
 			
-			await Sftp.RenameFile(CredentialService.SftpCredentials, Src, PathUtils.GetFullPath(Path, NewName));
+			await Sftp.RenameFile(ServerManager.CurrentServer.Id, Src, PathUtils.GetFullPath(Path, NewName));
 			switch (Sftp.StatusCode)
 			{
 				case HttpStatusCode.Accepted:

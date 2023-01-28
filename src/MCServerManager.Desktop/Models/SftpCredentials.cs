@@ -2,34 +2,22 @@ namespace MCServerManager.Desktop.Models;
 
 public class SftpCredentials : ICloneable
 {
-	public String Host { get; set; }  = "";
+	public String Host { get; init; }  = "";
 	
-	public String? Token { get; set; }
-	
-	public String User { get; set; }  = "";
+	public String User { get; init; }  = "";
 
-	public String Password { get; set; } = "";
+	public String Password { get; init; } = "";
 
-	public int Port { get; set; } = 22;
-	
-	public bool IsValid { get; set; }
-
-	public bool ShareToken { get; set; } = true;
-	
-	public bool SaveCredentials { get; set; }
+	public int Port { get; init; } = 22;
 
 	public object Clone()
 	{
 		return new SftpCredentials()
 		{
 			Host = Host,
-			Token = Token,
 			User = User,
 			Password = Password,
-			Port = Port,
-			IsValid = IsValid,
-			ShareToken = ShareToken,
-			SaveCredentials = SaveCredentials
+			Port = Port
 		};
 	}
 }

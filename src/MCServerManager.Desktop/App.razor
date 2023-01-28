@@ -1,6 +1,4 @@
-@using MCServerManager.Desktop.Services
-@inject CredentialService CredentialService
-@if (CredentialService.Loaded)
+@if (true)
 {
 	<Router AppAssembly="@typeof(App).Assembly">
 		<Found Context="routeData">
@@ -23,12 +21,4 @@ else
 		<MudText>Loading servers</MudText>
 	</MudStack>
 }
-@code
-{
 
-	protected override async Task OnInitializedAsync()
-	{
-		if(!CredentialService.Loaded)
-			await CredentialService.Load();
-	}
-}

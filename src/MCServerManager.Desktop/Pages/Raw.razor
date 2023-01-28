@@ -1,8 +1,8 @@
 @page "/raw/{*Path}"
-@using MCServerManager.Desktop.Services
 @using MCServerManager.Desktop.Controllers
+@using MCServerManager.Desktop.Managers
 @inherits MCServerManager.Desktop.Components.PathComponentBase
-@inject CredentialService CredentialService
+@inject ServerManager ServerManager
 @inject SftpController Sftp
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar

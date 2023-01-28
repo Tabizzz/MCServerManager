@@ -1,0 +1,3 @@
+[submodule "deps/mcswlib"]
+	path = deps/mcswlib
+	url = https://github.com/Tabizzz/mcswlib

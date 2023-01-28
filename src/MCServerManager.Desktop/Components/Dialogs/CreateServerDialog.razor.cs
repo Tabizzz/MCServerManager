@@ -13,14 +13,74 @@ public partial class CreateServerDialog
 	SftpCredentials _sftp = new();
 
 	byte _page;
+
+	bool _validating;
+
+	byte _phase;
+
+	string? _error;
+
+	bool _valid;
 	
-	void Submit()
+	async Task Submit()
 	{
-		_page++;
+		if(_page < 2)
+			_page++;
+		_error = null;
+		UpdateTittle();
+
+		if (_page == 2)
+		{
+			_validating = true;
+			_phase = 0;
+			MudDialog.Options.CloseButton = false;
+			MudDialog.Options.CloseOnEscapeKey = false;
+			MudDialog.SetOptions(MudDialog.Options);
+			StateHasChanged();
+
+			var server = ServerFactory.Make(_server.Ip, _server.Port, false, _server.Name);
+			
+			await server.Updater.Ping(10);
+			var last = server.Updater.GetLatestServerInfo(true);
+			_server.Status = last;
+			_phase++;
+			StateHasChanged();
+			
+
+		}
 	}
 
 	void Back()
 	{
 		_page--;
+		_error = null;
+		UpdateTittle();
+	}
+
+	void UpdateTittle()
+	{
+		switch (_page)
+		{
+			case 0:
+				MudDialog.SetTitle("Add Server - General Info");
+				break;
+			case 1:
+				MudDialog.SetTitle("Add Server - Sftp Credentials");
+				break;
+			case 2:
+				MudDialog.SetTitle("Add Server - Validation");
+				break;
+		}
+	}
+
+	void ValidateInputs()
+	{
+		_valid = true;
+		
+		if (_page == 0)
+		{
+			if (string.IsNullOrWhiteSpace(_server.Ip)) _valid = false;
+			if (string.IsNullOrWhiteSpace(_server.Name)) _valid = false;
+		}
 	}
 }

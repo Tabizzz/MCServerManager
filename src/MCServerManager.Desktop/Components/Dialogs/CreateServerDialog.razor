@@ -1,36 +1,75 @@
-﻿<MudDialog>
+﻿@using mcswlib.ServerStatus
+@inject ServerStatusFactory ServerFactory
+<MudDialog>
 	<DialogContent>
 		<MudDivider/>
-		<MudTextField @bind-Value="@_server.Name"
-		              Immediate="true"
-		              Label="Server name"
-		              Required="true"
-		              HelperText="The display name to show on this server"
-		              Placeholder="ExampleCraft"/>
-		<MudStack Row="true">
-			<MudTextField @bind-Value="@_server.Ip"
-			              FullWidth="true"
+		@if (_page == 0)
+		{
+			<MudTextField @bind-Value="@_server.Name"
 			              Immediate="true"
-			              Label="Server ip"
+			              Label="Server name"
 			              Required="true"
-			              HelperText="The ip of the server"
-			              Placeholder="play.examplecraft.com"/>
-			<MudNumericField @bind-Value="@_server.Port"
-							 HelperText="Port of the server"
-							 Immediate="true"
-							 Label="Port"
-							 Placeholder="25565"/>
-		</MudStack>
+			              HelperText="The display name to show on this server"
+			              Placeholder="ExampleCraft"
+			              TextChanged="ValidateInputs"/>
+			<MudStack Row="true">
+				<MudTextField @bind-Value="@_server.Ip"
+				              FullWidth="true"
+				              Immediate="true"
+				              Label="Server ip"
+				              Required="true"
+				              HelperText="The ip of the server"
+				              Placeholder="play.examplecraft.com"
+				              TextChanged="ValidateInputs"/>
+				<MudNumericField @bind-Value="@_server.Port"
+				                 HelperText="Port of the server"
+				                 Immediate="true"
+				                 Label="Port"
+				                 Placeholder="25565"/>
+			</MudStack>
+		}
+		else if (_page == 1)
+		{
+			
+		}
+		else if (_page == 2)
+		{
+			@if (_validating)
+			{
+				<MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="pt-2">
+					<MudProgressCircular Indeterminate="true" Color="Color.Primary"/>
+					<MudText>
+						@switch (_phase)
+						{
+							case 0:
+								@:Pinging server @_server.Ip:@_server.Port
+								break;
+							case 1:
+								@:Connecting to @_sftp.Host as @_sftp.User
+								break;
+						}
+					</MudText>
+				</MudStack>
+			}
+			else
+			{
+				
+			}
+		}
+		@if (_error is not null)
+		{
+			<MudAlert Severity="Severity.Error">@_error</MudAlert>
+		}
 	</DialogContent>
 	<DialogActions>
 		<DialogActions>
 			@if (_page > 0)
 			{
-				<MudButton OnClick="Back">
+				<MudButton OnClick="Back" Disabled="_validating">
 					Back
 				</MudButton>
 			}
-			<MudButton Color="Color.Primary" OnClick="Submit">
+			<MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(_validating || !_valid)">
 				@switch (_page)
 				{
 					case 0:

@@ -1,7 +1,4 @@
-﻿@using MCServerManager.Desktop.Services
-@inherits LayoutComponentBase
-@inject CredentialService CredentialService
-@inject NavigationManager NavigationManager
+﻿@inherits LayoutComponentBase
 
 <MudThemeProvider IsDarkMode="true"/>
 <MudDialogProvider CloseButton="true"
@@ -33,23 +30,7 @@
 	<MudMainContent Style="height: 100%">
 		<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4" Style="height: 100%">
 			<CascadingValue Value="this">
-				@if (!RequireSftp || (RequireSftp && CredentialService.SftpCredentials.IsValid))
-				{
-					@Body
-				}
-				else
-				{
-					<MudAlert Severity="Severity.Error">
-						You need to specify SFTP Credentials before access to this page!
-						<MudButton Variant="Variant.Text"
-						           EndIcon="@Icons.Material.Filled.Login"
-						           Color="Color.Secondary"
-						           Style="text-transform:none"
-						           OnClick="GotoAuth">
-							Go to Auth
-						</MudButton>
-					</MudAlert>
-				}
+				@Body
 			</CascadingValue>
 		</MudContainer>
 	</MudMainContent>

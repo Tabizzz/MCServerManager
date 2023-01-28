@@ -39,10 +39,9 @@ public partial class Raw : IAsyncDisposable
 
 	protected override async Task OnInitializedAsync()
 	{
-		Layout.RequireSftp = true;
-		if (!CredentialService.SftpCredentials.IsValid) return;
-
-		_response = await Sftp.RawText(CredentialService.SftpCredentials, Path);
+		if(ServerManager.CurrentServer is null) return;
+		
+		_response = await Sftp.RawText(ServerManager.CurrentServer.Id, Path);
 		switch (Sftp.StatusCode)
 		{
 			case HttpStatusCode.Accepted:
@@ -73,10 +72,11 @@ public partial class Raw : IAsyncDisposable
 
 	async Task SaveFile()
 	{
+		if(ServerManager.CurrentServer is null) return;
 		_saving = true;
 		StateHasChanged();
 		ValidatePath();
-		await Sftp.UpdateRawText(Path, CredentialService.SftpCredentials, await Editor.GetValue());
+		await Sftp.UpdateRawText(Path, ServerManager.CurrentServer.Id, await Editor.GetValue());
 
 		if (Sftp.StatusCode == HttpStatusCode.Accepted)
 		{

@@ -2,6 +2,8 @@
 using MCServerManager.Desktop.Controllers;
 using MCServerManager.Desktop.Managers;
 using MCServerManager.Desktop.Services;
+using mcswlib;
+using mcswlib.ServerStatus;
 using MessagePipe;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,15 +34,28 @@ class Program
 		});
 		appBuilder.Services.AddBlazoredLocalStorage();
 		appBuilder.Services.AddMessagePipe();
-		appBuilder.Services.AddScoped<CredentialService>();
 		appBuilder.Services.AddScoped<FileSystemService>();
 		appBuilder.Services.AddScoped<ServerManager>();
 		appBuilder.Services.AddScoped<ServerPropertiesService>();
 		
-		appBuilder.Services.AddSingleton<CredentialManager>();
 		appBuilder.Services.AddSingleton<SftpConnectionsManager>();
-		appBuilder.Services.AddSingleton<AuthController>();
 		appBuilder.Services.AddSingleton<SftpController>();
+
+		appBuilder.Services.AddSingleton(sp =>
+		{
+			var dev = new ServerStatusFactory();
+			Logger.LogLevel = Types.LogLevel.None;
+			var notifier = sp.GetRequiredService<IAsyncPublisher<ServerStatus>>();
+			
+			dev.ServerChanged += (sender, bases) =>
+			{
+				if(sender is ServerStatus status)
+					notifier.PublishAsync(status, CancellationToken.None);
+			};
+			
+			dev.StartAutoUpdate(10);
+			return dev;
+		});
 		
 		var app = appBuilder.Build();
 		

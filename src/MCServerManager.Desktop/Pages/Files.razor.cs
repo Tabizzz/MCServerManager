@@ -19,9 +19,6 @@ public partial class Files : IDisposable
 
 	protected override async Task OnInitializedAsync()
 	{
-		Layout.RequireSftp = true;
-		if (!CredentialService.SftpCredentials.IsValid) return;
-
 		await UpdateFiles();
 
 		NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
@@ -103,6 +100,7 @@ public partial class Files : IDisposable
 
 	async Task UploadFiles(InputFileChangeEventArgs arg)
 	{
+		if(ServerManager.CurrentServer is null) return;
 		var file = arg.File;
 		_uploading = true;
 		_percentage = 0;
@@ -112,7 +110,7 @@ public partial class Files : IDisposable
 		
 		try
 		{
-			await Sftp.UploadFile(file, PathUtils.GetFullPath(Path, file.Name), CredentialService.SftpCredentials, obj =>
+			await Sftp.UploadFile(file, PathUtils.GetFullPath(Path, file.Name), ServerManager.CurrentServer.Id, obj =>
 			{
 				InvokeAsync(() =>
 				{
@@ -154,12 +152,14 @@ public partial class Files : IDisposable
 	
 	async Task DeleteFile(SftpFileEntry file)
 	{
+		if(ServerManager.CurrentServer is null) return;
+
 		var result = await Mbox.Show();
 		if (result.HasValue && result.Value)
 		{
 			FileEntries?.Remove(file);
 			StateHasChanged();
-			await Sftp.DeleteFile(CredentialService.SftpCredentials, file.Path);
+			await Sftp.DeleteFile(ServerManager.CurrentServer.Id, file.Path);
 			if (Sftp.StatusCode == HttpStatusCode.Accepted)
 			{
 				Snackbar.Add((file.IsFolder ? "Folder" : "File") + " deleted", Severity.Success);
@@ -178,6 +178,7 @@ public partial class Files : IDisposable
 	
 	async Task DownloadFile(SftpFileEntry file)
 	{
+		if(ServerManager.CurrentServer is null) return;
 		_saveOpen = true;
 		_toUpload = file.Size;
 		_uploaded = 0;
@@ -190,7 +191,7 @@ public partial class Files : IDisposable
 		if (dialog.IsOk)
 		{
 			_downloading = true;
-			await Sftp.SaveFile(CredentialService.SftpCredentials, file.Path, dialog.Path, obj =>
+			await Sftp.SaveFile(ServerManager.CurrentServer.Id, file.Path, dialog.Path, obj =>
 			{
 				InvokeAsync(() =>
 				{

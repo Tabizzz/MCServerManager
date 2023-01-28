@@ -1,6 +1,4 @@
-using System.Net;
 namespace MCServerManager.Desktop.Utils;
-// based on https://www.c-sharpcorner.com/article/custom-inputfile-with-progress-using-blazor-webassembly-asp-net-core-api/
 public class StreamAdapter : Stream
 {
 

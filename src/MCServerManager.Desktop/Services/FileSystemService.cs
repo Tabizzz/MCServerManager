@@ -1,8 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net;
-using System.Net.Http.Json;
-using System.Web;
 using MCServerManager.Desktop.Controllers;
+using MCServerManager.Desktop.Managers;
 using MCServerManager.Desktop.Models;
 namespace MCServerManager.Desktop.Services;
 
@@ -12,12 +11,12 @@ public class FileSystemService
 
 	readonly SftpController _sftp;
 
-	readonly CredentialService _credentialService;
+	readonly ServerManager _serverManager;
 
-	public FileSystemService(SftpController sftp, CredentialService credentialService)
+	public FileSystemService(SftpController sftp, ServerManager serverManager)
 	{
 		_sftp = sftp;
-		_credentialService = credentialService;
+		_serverManager = serverManager;
 	}
 
 	public bool HasEntriesForPath(string path) => _entriesPerPath.ContainsKey(path);
@@ -35,11 +34,14 @@ public class FileSystemService
 
 	public async Task<(string, List<SftpFileEntry>)> UpdatePath(string path)
 	{
-		var response = await _sftp.ListFiles(_credentialService.SftpCredentials, path);
-		if (_sftp.StatusCode == HttpStatusCode.Accepted)
+		if (_serverManager.CurrentServer is not null)
 		{
-			_entriesPerPath[path] = response.ToList();
-			return (path, GetCacheEntries(path));
+			var response = await _sftp.ListFiles(_serverManager.CurrentServer.Id, path);
+			if (_sftp.StatusCode == HttpStatusCode.Accepted)
+			{
+				_entriesPerPath[path] = response.ToList();
+				return (path, GetCacheEntries(path));
+			}
 		}
 		if (HasEntriesForPath(path))
 		{

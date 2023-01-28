@@ -1,6 +1,4 @@
 using System.Net;
-using System.Net.Http.Json;
-using System.Web;
 using MCServerManager.Desktop.Utils;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -24,7 +22,7 @@ public partial class FileCreateDialog
 
 	async Task Submit()
 	{
-		if (!string.IsNullOrWhiteSpace(FileName))
+		if (!string.IsNullOrWhiteSpace(FileName) && ServerManager.CurrentServer is not null)
 		{
 			_creating = true;
 			_existing = false;
@@ -32,7 +30,7 @@ public partial class FileCreateDialog
 			StateHasChanged();
 			
 			var toSave = PathUtils.GetFullPath(Path, FileName);
-			await Sftp.CreateEmptyFile(CredentialService.SftpCredentials, toSave, Directory);
+			await Sftp.CreateEmptyFile(ServerManager.CurrentServer.Id, toSave, Directory);
 			switch (Sftp.StatusCode)
 			{
 				case HttpStatusCode.Accepted:

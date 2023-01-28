@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http.Json;
 using MCServerManager.Desktop.Shared;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -17,18 +16,17 @@ public partial class Properties
 
 	protected override async Task OnInitializedAsync()
 	{
-		Layout.RequireSftp = true;
-		if (!CredentialService.SftpCredentials.IsValid) return;
-
 		await PropertiesService.ReadProperties();
 	}
 	
 	async Task SaveFile()
 	{
+		if(ServerManager.CurrentServer is null) return;
+
 		_saving = true;
 		StateHasChanged();
 		
-		await Sftp.UpdateRawText("/server.properties", CredentialService.SftpCredentials, PropertiesService.WriteProperties());
+		await Sftp.UpdateRawText("/server.properties", ServerManager.CurrentServer.Id, PropertiesService.WriteProperties());
 
 		if (Sftp.StatusCode == HttpStatusCode.Accepted)
 		{

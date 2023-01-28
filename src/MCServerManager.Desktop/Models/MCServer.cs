@@ -1,4 +1,5 @@
-﻿namespace MCServerManager.Desktop.Models;
+﻿using mcswlib.ServerStatus.ServerInfo;
+namespace MCServerManager.Desktop.Models;
 
 // ReSharper disable once InconsistentNaming
 /*
@@ -17,12 +18,12 @@ public class MCServer
 	/*
 	 * Unique id of this server.
 	 */
-	public Guid Id { get; private set; }
+	public Guid Id { get; }
 	
 	/*
 	 * Path for the icon to show in the server.
 	 */
-	public string Icon { get; set; }
+	public string Icon { get; set; } = string.Empty;
 
 	/*
 	 * User provided display name of the server.
@@ -40,7 +41,12 @@ public class MCServer
 	public ushort Port { get; set; } = 25565;
 	
 	/*
-	 * Sftp credentials to access to the remote file sistem.
+	 * Sftp credentials to access to the remote file system.
 	 */
-	public SftpCredentials? Sftp { get; set; }
+	public SftpCredentials Sftp { get; set; } = new();
+
+	/*
+	 * Status of the server pings.
+	 */
+	public ServerInfoResult? Status { get; set; }
 }

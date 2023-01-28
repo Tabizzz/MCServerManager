@@ -1,44 +1,43 @@
-using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Renci.SshNet;
 namespace MCServerManager.Desktop.Managers;
 
-public class SftpConnectionsManager
+/*
+ * Manage all active connections to sftp servers
+ */
+public class SftpConnectionsManager : BaseManager<Guid, (DateTime lastUse, SftpClient connection)>
 {
 
-	readonly IDictionary<string, (DateTime lastUse, SftpClient connection)> _clientDictionary = 
-		new ConcurrentDictionary<string, (DateTime, SftpClient)>();
-
-	readonly CredentialManager _credentialManager;
+	readonly ServerManager _serverManager;
 
 	readonly ILogger<SftpConnectionsManager> _logger;
 
-	public SftpConnectionsManager(CredentialManager credentialManager, ILogger<SftpConnectionsManager> logger)
+	public SftpConnectionsManager(ServerManager serverManager, ILogger<SftpConnectionsManager> logger)
 	{
-		_credentialManager = credentialManager;
+		_serverManager = serverManager;
 		_logger = logger;
 	}
-	public SftpClient? CreateConnection(string key)
+	public async Task<SftpClient?> CreateConnection(Guid key)
 	{
-		if (_credentialManager.Obtain(key) is not { Token: { } } credentials)
+		if (_serverManager[key] is not { Sftp: { } credentials })
 			return null;
-		if (_clientDictionary.TryGetValue(key, out var value))
+		if (_dictionary.TryGetValue(key, out var value))
 			return value.connection;
 
 		var client = new SftpClient(credentials.Host, credentials.Port, credentials.User, credentials.Password);
-		client.Connect();
+		await Task.Run(client.Connect);
 		
-		_clientDictionary.Add(key, (DateTime.Now, client));
+		_dictionary.Add(key, (DateTime.Now, client));
 		return client;
 	}
 
-	public void DeleteConnection(string key)
+	public void DeleteConnection(Guid key)
 	{
-		if (!_clientDictionary.ContainsKey(key))
+		if (!_dictionary.ContainsKey(key))
 			return;
 
-		_clientDictionary[key].connection.Dispose();
-		_clientDictionary.Remove(key);
+		_dictionary[key].connection.Dispose();
+		_dictionary.Remove(key);
 	}
 	
 	public TimeSpan MonitorInterval { get; } = TimeSpan.FromMinutes(1);
@@ -46,20 +45,20 @@ public class SftpConnectionsManager
 
 	public ValueTask DisposeAsync()
 	{
-		foreach (var client in _clientDictionary)
+		foreach (var client in _dictionary)
 		{
 			client.Value.connection.Dispose();
 		}
 		return ValueTask.CompletedTask;
 	}
 
-	public SftpClient? GetConnection(string key)
+	public async Task<SftpClient?> GetConnection(Guid key)
 	{
-		if (!_clientDictionary.TryGetValue(key, out var value))
+		if (!_dictionary.TryGetValue(key, out var value))
 		{
 			try
 			{
-				if (CreateConnection(key) is { } client)
+				if (await CreateConnection(key) is { } client)
 				{
 					value = (DateTime.Now, client);
 				}
@@ -76,7 +75,7 @@ public class SftpConnectionsManager
 		}
 
 		if(!value.connection.IsConnected)
-			value.connection.Connect();
+			await Task.Run(value.connection.Connect);
 		value.lastUse = DateTime.Now;
 		return value.connection;
 	}
