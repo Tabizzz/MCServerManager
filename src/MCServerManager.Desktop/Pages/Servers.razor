@@ -24,9 +24,11 @@
 		{
 			<MudItem>
 				<MudCard>
-					<MudCardHeader>
+					<MudCardHeader Class="pb-1">
 						<CardHeaderAvatar>
-							<MudAvatar Color="Color.Secondary" Variant="Variant.Outlined" Image="@(server.Status?.FavIcon??"icons/vanilla.png")"/>
+							<MudAvatar Color="Color.Secondary"
+							           Variant="Variant.Outlined"
+							           Image="@(server.Status?.FavIcon??"icons/vanilla.png")"/>
 						</CardHeaderAvatar>
 						<CardHeaderContent>
 							<MudText Typo="Typo.body1">@server.Name</MudText>
@@ -35,8 +37,8 @@
 								@if (server.Status.HadSuccess)
 								{
 									<MudStack Row="true" Justify="Justify.SpaceBetween">
-										<MudText Typo="Typo.body2" Color="Color.Success">Online</MudText>
-										<MudText Typo="Typo.body2" Color="Color.Success">@(server.Status.Ping)ms</MudText>
+										<MudText Typo="Typo.body2" Color="Color.Success">Online </MudText>
+										<MudText Typo="Typo.body2" Color="Color.Success"> @(server.Status.Ping)ms</MudText> 
 									</MudStack>
 								}
 								else
@@ -53,6 +55,23 @@
 							<MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
 						</CardHeaderActions>
 					</MudCardHeader>
+					<MudCardContent Class="pt-1">
+						@if (server.Status is {New: { HadSuccess: true, OnlinePlayers.Count: > 0 }})
+						{
+							<MudAvatarGroup Max="13" Spacing="3">
+								@foreach (var player in server.Status.New.OnlinePlayers)
+								{
+									<MudAvatar Alt="@player.Name"
+									           Image="@($"https://mc-heads.net/avatar/{player.RawName}")"
+									           Size="Size.Small"/>
+								}
+								@if (server.Status.CurrentPlayerCount - server.Status.OnlinePlayers.Count > 0)
+								{
+									<MudAvatar Size="Size.Small">+@(server.Status.CurrentPlayerCount - server.Status.OnlinePlayers.Count)</MudAvatar>
+								}
+							</MudAvatarGroup>
+						}
+					</MudCardContent>
 				</MudCard>
 			</MudItem>
 		}
