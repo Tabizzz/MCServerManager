@@ -1,4 +1,5 @@
-﻿using mcswlib.ServerStatus.ServerInfo;
+﻿using System.Text.Json.Serialization;
+using mcswlib.ServerStatus.ServerInfo;
 namespace MCServerManager.Desktop.Models;
 
 // ReSharper disable once InconsistentNaming
@@ -45,6 +46,8 @@ public class MCServer
 	 */
 	public SftpCredentials Sftp { get; set; } = new();
 
+	[Newtonsoft.Json.JsonIgnore]
+	[JsonIgnore]
 	/*
 	 * Status of the server pings.
 	 */

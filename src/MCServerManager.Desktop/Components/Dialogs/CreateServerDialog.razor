@@ -1,8 +1,12 @@
 ﻿@using mcswlib.ServerStatus
+@using MCServerManager.Desktop.Managers
 @inject ServerStatusFactory ServerFactory
+@inject SftpConnectionsManager ConnectionsManager
+@inject ServerManager ServerManager
+
 <MudDialog>
 	<DialogContent>
-		<MudDivider/>
+		<MudDivider Class="mb-2"/>
 		@if (_page == 0)
 		{
 			<MudTextField @bind-Value="@_server.Name"
@@ -11,7 +15,8 @@
 			              Required="true"
 			              HelperText="The display name to show on this server"
 			              Placeholder="ExampleCraft"
-			              TextChanged="ValidateInputs"/>
+			              TextChanged="ValidateInputs"
+			              Variant="Variant.Filled"/>
 			<MudStack Row="true">
 				<MudTextField @bind-Value="@_server.Ip"
 				              FullWidth="true"
@@ -20,17 +25,48 @@
 				              Required="true"
 				              HelperText="The ip of the server"
 				              Placeholder="play.examplecraft.com"
-				              TextChanged="ValidateInputs"/>
+				              TextChanged="ValidateInputs"
+				              Variant="Variant.Filled"/>
 				<MudNumericField @bind-Value="@_server.Port"
 				                 HelperText="Port of the server"
 				                 Immediate="true"
 				                 Label="Port"
-				                 Placeholder="25565"/>
+				                 Placeholder="25565"
+				                 Variant="Variant.Filled"/>
 			</MudStack>
 		}
 		else if (_page == 1)
 		{
-			
+			<MudStack Row="true">
+				<MudTextField @bind-Value="_sftp.Host"
+				              FullWidth="true"
+				              HelperText="The host to connect"
+				              Immediate="true"
+				              Label="Host"
+				              Placeholder="0.0.0.0"
+				              Required="true"
+				              TextChanged="ValidateInputs"
+				              Variant="Variant.Filled"/>
+
+				<MudNumericField @bind-Value="_sftp.Port"
+				                 Label="Port"
+				                 Placeholder="22"
+				                 Variant="Variant.Filled"/>
+			</MudStack>
+			<MudTextField @bind-Value="_sftp.User"
+			              HelperText="The user used to authenticate"
+			              Immediate="true"
+			              Label="Username"
+			              Required="true"
+			              TextChanged="ValidateInputs"
+			              Variant="Variant.Filled"/>
+			<MudTextField @bind-Value="_sftp.Password"
+			              HelperText="The password used to authenticate"
+			              Immediate="true"
+			              InputType="InputType.Password"
+			              Label="Password"
+			              TextChanged="ValidateInputs"
+			              Variant="Variant.Filled"/>
 		}
 		else if (_page == 2)
 		{
@@ -53,7 +89,11 @@
 			}
 			else
 			{
-				
+				<MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+					<MudAvatar Color="Color.Primary" Size="Size.Large" Variant="Variant.Outlined" Image="@(_server.Status?.FavIcon??"icons/vanilla.png")"/>
+					<MudText>@_server.Name</MudText>
+					<MudText Color="Color.Success">Press <b>save</b> to add the server</MudText>
+				</MudStack>
 			}
 		}
 		@if (_error is not null)
@@ -62,27 +102,28 @@
 		}
 	</DialogContent>
 	<DialogActions>
-		<DialogActions>
-			@if (_page > 0)
-			{
-				<MudButton OnClick="Back" Disabled="_validating">
-					Back
-				</MudButton>
-			}
-			<MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(_validating || !_valid)">
-				@switch (_page)
-				{
-					case 0:
-						@:Next
-						break;
-					case 1:
-						@:Validate
-						break;
-					case 2:
-						@:Save
-						break;
-				}
+		<MudButton OnClick="Cancel" Disabled="_validating" Color="Color.Error">
+			Cancel
+		</MudButton>
+		@if (_page > 0)
+		{
+			<MudButton OnClick="Back" Disabled="_validating">
+				Back
 			</MudButton>
-		</DialogActions>
+		}
+		<MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(_validating || !_valid)">
+			@switch (_page)
+			{
+				case 0:
+					@:Next
+					break;
+				case 1:
+					@:Validate
+					break;
+				case 2:
+					@:Save
+					break;
+			}
+		</MudButton>
 	</DialogActions>
 </MudDialog>

@@ -1,5 +1,4 @@
-﻿using Blazored.LocalStorage;
-using MCServerManager.Desktop.Controllers;
+﻿using MCServerManager.Desktop.Controllers;
 using MCServerManager.Desktop.Managers;
 using MCServerManager.Desktop.Services;
 using mcswlib;
@@ -32,12 +31,11 @@ class Program
 			c.SnackbarConfiguration.HideTransitionDuration = 200;
 			c.SnackbarConfiguration.ShowTransitionDuration = 200;
 		});
-		appBuilder.Services.AddBlazoredLocalStorage();
 		appBuilder.Services.AddMessagePipe();
-		appBuilder.Services.AddScoped<FileSystemService>();
-		appBuilder.Services.AddScoped<ServerManager>();
-		appBuilder.Services.AddScoped<ServerPropertiesService>();
+		appBuilder.Services.AddSingleton<FileSystemService>();
+		appBuilder.Services.AddSingleton<ServerPropertiesService>();
 		
+		appBuilder.Services.AddSingleton<ServerManager>();
 		appBuilder.Services.AddSingleton<SftpConnectionsManager>();
 		appBuilder.Services.AddSingleton<SftpController>();
 
@@ -75,6 +73,7 @@ class Program
 			.SetTitle("MC Server Manager")
 #endif
 			.Center()
+			.SetGrantBrowserPermissions(true)
 			.SetUseOsDefaultSize(true);
 
 		app.MainWindow.WindowCreated += (_, _) =>

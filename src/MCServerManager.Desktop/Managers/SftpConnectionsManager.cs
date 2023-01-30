@@ -17,12 +17,23 @@ public class SftpConnectionsManager : BaseManager<Guid, (DateTime lastUse, SftpC
 		_serverManager = serverManager;
 		_logger = logger;
 	}
-	public async Task<SftpClient?> CreateConnection(Guid key)
+	
+	public async Task<SftpClient?> CreateConnection(Guid key, bool force = false)
 	{
 		if (_serverManager[key] is not { Sftp: { } credentials })
 			return null;
 		if (_dictionary.TryGetValue(key, out var value))
-			return value.connection;
+		{
+			if (force)
+			{
+				value.connection.Disconnect();
+				_dictionary.Remove(key);
+			}
+			else
+			{
+				return value.connection;
+			}
+		}
 
 		var client = new SftpClient(credentials.Host, credentials.Port, credentials.User, credentials.Password);
 		await Task.Run(client.Connect);

@@ -2,13 +2,13 @@ namespace MCServerManager.Desktop.Models;
 
 public class SftpCredentials : ICloneable
 {
-	public String Host { get; init; }  = "";
+	public String Host { get; set; }  = "";
 	
-	public String User { get; init; }  = "";
+	public String User { get; set; }  = "";
 
-	public String Password { get; init; } = "";
+	public String Password { get; set; } = "";
 
-	public int Port { get; init; } = 22;
+	public ushort Port { get; set; } = 22;
 
 	public object Clone()
 	{

@@ -16,7 +16,6 @@
 	  <PackageReference Include="MudBlazor" Version="6.1.7" />
 	  <PackageReference Include="NativeFileDialogSharp" Version="0.5.0" />
 	  <PackageReference Include="Photino.Blazor" Version="2.4.0" />
-	  <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
 	  <PackageReference Include="BlazorMonaco" Version="2.1.0" />
 	  <PackageReference Include="MessagePipe" Version="1.7.4" />
 	  <PackageReference Include="SSH.NET" Version="2020.0.2" />

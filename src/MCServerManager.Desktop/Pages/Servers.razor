@@ -2,10 +2,14 @@
 @using MCServerManager.Desktop.Managers
 @inject ServerManager ServerManager
 @inject IDialogService DialogService
+@inject IJSRuntime JsRuntime
 
 @if (ServerManager.Count > 0)
 {
-	
+	foreach (var server in ServerManager.Servers)
+	{
+		<MudText>@server.Name - @server.Status?.HadSuccess</MudText>
+	}
 }
 else
 {
