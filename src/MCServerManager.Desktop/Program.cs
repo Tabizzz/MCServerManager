@@ -33,6 +33,7 @@ class Program
 		});
 		appBuilder.Services.AddMessagePipe();
 		appBuilder.Services.AddSingleton<FileSystemService>();
+		appBuilder.Services.AddSingleton<StorageService>();
 		appBuilder.Services.AddSingleton<ServerPropertiesService>();
 		
 		appBuilder.Services.AddSingleton<ServerManager>();
@@ -42,16 +43,18 @@ class Program
 		appBuilder.Services.AddSingleton(sp =>
 		{
 			var dev = new ServerStatusFactory();
+			dev.AlwaysInvokeAsyncEvent = true;
 			Logger.LogLevel = Types.LogLevel.None;
 			var notifier = sp.GetRequiredService<IAsyncPublisher<ServerStatus>>();
 			
-			dev.ServerChanged += (sender, bases) =>
+			dev.ServerChanged += (sender, _) =>
 			{
-				if(sender is ServerStatus status)
+				if (sender is ServerStatus status)
+				{
 					notifier.PublishAsync(status, CancellationToken.None);
+				}
 			};
 			
-			dev.StartAutoUpdate(10);
 			return dev;
 		});
 		

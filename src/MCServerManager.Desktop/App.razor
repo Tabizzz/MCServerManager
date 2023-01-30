@@ -1,4 +1,8 @@
-@if (true)
+@using MCServerManager.Desktop.Services
+@inject StorageService ServerManager
+@inject IJSRuntime JsRuntime
+
+@if (ServerManager.Loaded)
 {
 	<Router AppAssembly="@typeof(App).Assembly">
 		<Found Context="routeData">
@@ -22,3 +26,14 @@ else
 	</MudStack>
 }
 
+@code
+{
+	protected override async Task OnInitializedAsync()
+	{
+		if (!ServerManager.Loaded)
+		{
+			await ServerManager.Load(JsRuntime);
+			StateHasChanged();
+		}
+	}
+}

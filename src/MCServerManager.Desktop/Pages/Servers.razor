@@ -1,15 +1,62 @@
 ﻿@page "/"
 @using MCServerManager.Desktop.Managers
+@using MCServerManager.Desktop.Models
+@using MCServerManager.Desktop.Services
+@using MessagePipe
 @inject ServerManager ServerManager
+@inject StorageService Storage
 @inject IDialogService DialogService
 @inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
+@inject IAsyncSubscriber<MCServer> Subscriber
 
 @if (ServerManager.Count > 0)
 {
-	foreach (var server in ServerManager.Servers)
-	{
-		<MudText>@server.Name - @server.Status?.HadSuccess</MudText>
-	}
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.End">
+		<MudText Typo="Typo.h5">Your servers</MudText>
+		<MudButton Color="Color.Primary" OnClick="OpenCreateServerDialog">
+			Add Server
+		</MudButton>
+	</MudStack>
+	<MudDivider/>
+	<MudGrid Class="pt-2">
+		@foreach (var server in ServerManager.Servers)
+		{
+			<MudItem>
+				<MudCard>
+					<MudCardHeader>
+						<CardHeaderAvatar>
+							<MudAvatar Color="Color.Secondary" Variant="Variant.Outlined" Image="@(server.Status?.FavIcon??"icons/vanilla.png")"/>
+						</CardHeaderAvatar>
+						<CardHeaderContent>
+							<MudText Typo="Typo.body1">@server.Name</MudText>
+							@if (server.Status is not null)
+							{
+								@if (server.Status.HadSuccess)
+								{
+									<MudStack Row="true" Justify="Justify.SpaceBetween">
+										<MudText Typo="Typo.body2" Color="Color.Success">Online</MudText>
+										<MudText Typo="Typo.body2" Color="Color.Success">@(server.Status.Ping)ms</MudText>
+									</MudStack>
+								}
+								else
+								{
+									<MudText Typo="Typo.body2" Color="Color.Error">Offline</MudText>
+								}
+							}
+							else
+							{
+								<MudText Typo="Typo.body2" Color="Color.Warning">Pinging...</MudText>
+							}
+						</CardHeaderContent>
+						<CardHeaderActions>
+							<MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+						</CardHeaderActions>
+					</MudCardHeader>
+				</MudCard>
+			</MudItem>
+		}
+	</MudGrid>
 }
 else
 {

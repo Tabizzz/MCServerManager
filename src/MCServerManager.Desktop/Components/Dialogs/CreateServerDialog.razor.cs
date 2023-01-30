@@ -1,7 +1,6 @@
 ﻿using MCServerManager.Desktop.Models;
 using MCServerManager.Desktop.Utils.Extensions;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using MudBlazor;
 namespace MCServerManager.Desktop.Components.Dialogs;
 
@@ -121,7 +120,7 @@ public partial class CreateServerDialog
 		}
 	}
 
-	public async Task Cancel()
+	public void Cancel()
 	{
 		var server = ServerFactory.Entries.FirstOrDefault(s => s.Updater.Address == _server.Ip && s.Updater.Port == _server.Port);
 		if (server is not null)
