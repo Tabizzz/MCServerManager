@@ -1,0 +1,37 @@
+﻿@using MessagePipe
+@using MCServerManager.Desktop.Models
+
+<MudExpansionPanel HideIcon="true" @bind-IsExpanded="_isOpen">
+	<TitleContent>
+		<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+			<MudText>@Task.Tittle</MudText>
+			@if (!_isOpen)
+			{
+				<MudProgressCircular Color="Color.Primary"
+				                     Indeterminate="@(Task.Progress < 0)"
+				                     Value="@Task.Progress"
+				                     Size="Size.Small"/>
+			}
+		</MudStack>
+	</TitleContent>
+	<ChildContent>
+		@if (!string.IsNullOrWhiteSpace(Task.Description))
+		{
+			<MudText>@Task.Description</MudText>
+		}
+		<MudStack Row="true" AlignItems="AlignItems.Center">
+			<MudProgressLinear Color="Color.Primary"
+			                   Indeterminate="@(Task.Progress < 0)"
+			                   Value="@Task.Progress"/>
+			@if (Task.Cancel is not null)
+			{
+				<MudTooltip Text="Cancel">
+					<MudIconButton Color="Color.Error"
+					               Icon="@Icons.Material.Outlined.Cancel"
+					               OnClick="@(()=>Task.Cancel(Task))"
+					               Size="Size.Small"/>
+				</MudTooltip>
+			}
+		</MudStack>
+	</ChildContent>
+</MudExpansionPanel>

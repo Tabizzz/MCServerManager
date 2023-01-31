@@ -2,13 +2,13 @@
 @using MCServerManager.Desktop.Services
 @using MCServerManager.Desktop.Models
 @using MCServerManager.Desktop.Managers
-@inject ServerManager ServerManager
+@inject ServerManager ServerManage
 @inject IAsyncSubscriber<SftpCredentials> SftpSubscriber
 @implements IDisposable
 
 <MudNavMenu Bordered="true">
 	<MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Monitor">Servers</MudNavLink>
-	@if (ServerManager.Count > 0 && ServerManager.CurrentServer is not null)
+	@if (ServerManage.Count > 0 && ServerManage.CurrentServer is not null)
 	{
 		<MudNavLink Href="dashboard" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
 		<MudNavLink Href="files" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.DriveFolderUpload">Filesystem</MudNavLink>

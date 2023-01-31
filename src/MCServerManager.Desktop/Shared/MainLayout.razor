@@ -14,10 +14,7 @@
 							 Icon="@Icons.Material.Filled.Menu"
 							 ToggledIcon="@Icons.Material.Filled.MenuOpen"/>
 		<MudSpacer/>
-		<MudIconButton Color="Color.Inherit"
-					   Icon="@Icons.Custom.Brands.GitHub"
-					   Link="https://github.com/Tabizzz/MCServerManager/tree/desktop"
-					   Target="_blank"/>
+		<TaskList/>
 	</MudAppBar>
 	<MudDrawer @bind-Open="@_drawerOpen"
 			   ClipMode="DrawerClipMode.Always"
@@ -26,6 +23,11 @@
 			   Variant="DrawerVariant.Mini"
 			   Width="150px">
 		<NavMenu/>
+		<MudSpacer/>
+		<MudIconButton Color="Color.Inherit"
+		               Icon="@Icons.Custom.Brands.GitHub"
+		               Link="https://github.com/Tabizzz/MCServerManager/tree/desktop"
+		               Target="_blank"/>
 	</MudDrawer>
 	<MudMainContent Style="height: 100%">
 		<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4" Style="height: 100%">

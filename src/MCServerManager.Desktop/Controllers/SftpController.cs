@@ -155,7 +155,7 @@ public class SftpController
 				var files = await client.ListDirectoryAsync(path);
 
 				StatusCode = HttpStatusCode.Accepted;
-				return files.Select(f => new SftpFileEntry
+				return files.Where(t=>t.Name is not "." and not "..").Select(f => new SftpFileEntry
 				{
 					Path = f.FullName,
 					IsFolder = f.IsDirectory,

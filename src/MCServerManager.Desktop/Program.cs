@@ -34,6 +34,7 @@ class Program
 		appBuilder.Services.AddMessagePipe();
 		appBuilder.Services.AddSingleton<FileSystemService>();
 		appBuilder.Services.AddSingleton<StorageService>();
+		appBuilder.Services.AddSingleton<TaskService>();
 		appBuilder.Services.AddSingleton<ServerPropertiesService>();
 		
 		appBuilder.Services.AddSingleton<ServerManager>();

@@ -1,0 +1,34 @@
+﻿@using MCServerManager.Desktop.Services
+@using MessagePipe
+@using MCServerManager.Desktop.Models
+@inject TaskService TaskService
+@inject IAsyncSubscriber<BackgroundTask> Subscriber
+
+<div>
+	@if (TaskService.Count > 0)
+	{
+		<MudToggleIconButton @bind-Toggled="@_open" Icon="fas fa-spinner fa-spin-pulse" ToggledIcon="fas fa-spinner fa-spin-pulse" ToggledColor="Color.Secondary"/>
+	}
+	else
+	{
+		<MudToggleIconButton @bind-Toggled="@_open" Icon="fas fa-list-check" ToggledIcon="fas fa-list-ul" ToggledColor="Color.Secondary"/>
+	}
+	
+	<MudPopover Open="_open" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+		<div class="mx-auto" style="max-width: 500px;min-width: 300px">
+			@if (TaskService.Count > 0)
+			{
+				<MudExpansionPanels>
+					@foreach (var task in TaskService)
+					{
+						<TaskListItem Task="@task"/>
+					}
+				</MudExpansionPanels>
+			}
+			else
+			{
+				<MudAlert Severity="Severity.Info">There are no background tasks</MudAlert>
+			}
+		</div>
+	</MudPopover>
+</div>
