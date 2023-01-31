@@ -1,5 +1,6 @@
 ﻿using MCServerManager.Desktop.Managers;
 using MCServerManager.Desktop.Models;
+using MCServerManager.Desktop.Utils.Extensions;
 using mcswlib.ServerStatus;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
@@ -15,15 +16,18 @@ public class StorageService
 
 	readonly List<MCServer> _invalidServers = new();
 
+	readonly TaskService _taskService;
+
 	MCServer[] InvalidServers => _invalidServers.ToArray();
 
 	public bool HasInvalid => _invalidServers.Count > 0;
 
-	public StorageService(ServerManager serverManager, SftpConnectionsManager connectionsManager, ServerStatusFactory serverFactory)
+	public StorageService(ServerManager serverManager, SftpConnectionsManager connectionsManager, ServerStatusFactory serverFactory, TaskService taskService)
 	{
 		_serverManager = serverManager;
 		_connectionsManager = connectionsManager;
 		_serverFactory = serverFactory;
+		_taskService = taskService;
 	}
 
 	public bool Loaded { get; private set; }
@@ -46,8 +50,34 @@ public class StorageService
 				}
 			}
 		}
-		_serverFactory.StartAutoUpdate(5);
+		MakeFirstPing();
 		Loaded = true;
+	}
+
+	void MakeFirstPing()
+	{
+		_taskService.Create(new()
+		{
+			Tittle = "Pinging Servers",
+			TaskCreator = FirstPingCore
+		});
+	}
+
+	async Task FirstPingCore(RunningBackgroundTask arg)
+	{
+		var c = _serverManager.Count;
+		float t = 0;
+		foreach (var server in _serverManager.Servers)
+		{
+			arg.BackgroundTask.Description = $"Pinging {server.Name}";
+			arg.BackgroundTask.Progress = t++ / c * 100;
+			arg.Update();
+			var pinger = _serverFactory.MakeOrGet(server.Ip, server.Port, server.Name);
+			await pinger.Updater.Ping();
+			var events = pinger.Update();
+			_serverFactory.ServerChanged?.Invoke(pinger, events);
+		}
+		_serverFactory.StartAutoUpdate(5);
 	}
 
 	async Task LoadServer(MCServer server)

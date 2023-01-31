@@ -5,15 +5,17 @@
 @inject IAsyncSubscriber<BackgroundTask> Subscriber
 
 <div>
-	@if (TaskService.Count > 0)
-	{
-		<MudToggleIconButton @bind-Toggled="@_open" Icon="fas fa-spinner fa-spin-pulse" ToggledIcon="fas fa-spinner fa-spin-pulse" ToggledColor="Color.Secondary"/>
-	}
-	else
-	{
-		<MudToggleIconButton @bind-Toggled="@_open" Icon="fas fa-list-check" ToggledIcon="fas fa-list-ul" ToggledColor="Color.Secondary"/>
-	}
-	
+	<MudTooltip Text="Background Tasks" Placement="Placement.Left">
+		@if (TaskService.Count > 0)
+        {
+        	<MudToggleIconButton @bind-Toggled="@_open" Icon="fas fa-spinner fa-spin-pulse" ToggledIcon="fas fa-spinner fa-spin-pulse" ToggledColor="Color.Secondary"/>
+        }
+		else
+		{
+			<MudToggleIconButton @bind-Toggled="@_open" Icon="fas fa-list-check" ToggledIcon="fas fa-list-ul" ToggledColor="Color.Secondary"/>
+		}
+	</MudTooltip>
+
 	<MudPopover Open="_open" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
 		<div class="mx-auto" style="max-width: 500px;min-width: 300px">
 			@if (TaskService.Count > 0)

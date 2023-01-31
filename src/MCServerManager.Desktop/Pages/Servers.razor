@@ -52,11 +52,24 @@
 							}
 						</CardHeaderContent>
 						<CardHeaderActions>
-							<MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+							<MudMenu Dense="true" Icon="@Icons.Material.Filled.MoreVert">
+								<MudMenuItem>
+									Edit
+								</MudMenuItem>
+								<MudMenuItem>
+									Dashboard
+								</MudMenuItem>
+								<MudMenuItem>
+									Files
+								</MudMenuItem>
+								<MudMenuItem>
+									Delete
+								</MudMenuItem>
+							</MudMenu>
 						</CardHeaderActions>
 					</MudCardHeader>
 					<MudCardContent Class="pt-1">
-						@if (server.Status is {New: { HadSuccess: true, OnlinePlayers.Count: > 0 }})
+						@if (server.Status is {New: { HadSuccess: true, OnlinePlayers: { Count: > 0 } }})
 						{
 							<MudAvatarGroup Max="13" Spacing="3">
 								@foreach (var player in server.Status.New.OnlinePlayers)
