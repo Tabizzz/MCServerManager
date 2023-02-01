@@ -1,0 +1,38 @@
+﻿@using MCServerManager.Desktop.Managers
+@using MCServerManager.Desktop.Models
+@using MessagePipe
+@inject ServerManager ServerManager
+@inject IAsyncSubscriber<MCServer> Subscriber
+@implements IDisposable
+
+<MudMenu Color="Color.Inherit"
+         Variant="Variant.Text"
+         Class="mx-1 px-3"
+         LockScroll="true"
+         Label="@ServerManager.CurrentServer?.Name"
+         EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+         Dense="true"
+         AnchorOrigin="Origin.BottomLeft"
+         TransformOrigin="Origin.TopLeft">
+	@foreach (var server in ServerManager.Servers)
+	{
+		<MudMenuItem OnClick="@(async () => await ServerManager.Select(server.Id))">
+			<MudText>@server.Name</MudText>
+		</MudMenuItem>
+	}
+</MudMenu>
+
+@code
+{
+	IDisposable _disposable = null!;
+
+	protected override void OnInitialized()
+	{
+		_disposable = Subscriber.Subscribe(async(_, _)=>await InvokeAsync(StateHasChanged));
+	}
+	
+	public void Dispose()
+	{
+		_disposable.Dispose();
+	}
+}

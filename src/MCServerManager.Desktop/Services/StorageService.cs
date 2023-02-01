@@ -69,7 +69,7 @@ public class StorageService
 		float t = 0;
 		foreach (var server in _serverManager.Servers)
 		{
-			arg.BackgroundTask.Description = $"Pinging {server.Name}";
+			arg.BackgroundTask.Description = $"Pinging server <b>{server.Name}</b>";
 			arg.BackgroundTask.Progress = t++ / c * 100;
 			arg.Update();
 			var pinger = _serverFactory.MakeOrGet(server.Ip, server.Port, server.Name);

@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using MCServerManager.Desktop.Managers
+@inherits LayoutComponentBase
+@inject ServerManager ServerManager
 
 <MudThemeProvider IsDarkMode="true"/>
 <MudDialogProvider CloseButton="true"
@@ -13,6 +15,10 @@
 		<MudToggleIconButton @bind-Toggled="@_drawerOpen"
 							 Icon="@Icons.Material.Filled.Menu"
 							 ToggledIcon="@Icons.Material.Filled.MenuOpen"/>
+		@if (ServerManager.Count > 0 && ServerManager.CurrentServer is not null)
+		{
+			<ServerSelector/>
+		}
 		<MudSpacer/>
 		<TaskList/>
 	</MudAppBar>

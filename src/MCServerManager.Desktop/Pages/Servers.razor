@@ -2,8 +2,12 @@
 @using MCServerManager.Desktop.Managers
 @using MCServerManager.Desktop.Models
 @using MCServerManager.Desktop.Services
+@using mcswlib.ServerStatus
 @using MessagePipe
+@inject TaskService TaskService
 @inject ServerManager ServerManager
+@inject ServerStatusFactory ServerFactory
+@inject SftpConnectionsManager ConnectionsManager
 @inject StorageService Storage
 @inject IDialogService DialogService
 @inject IJSRuntime JsRuntime
@@ -62,7 +66,7 @@
 								<MudMenuItem>
 									Files
 								</MudMenuItem>
-								<MudMenuItem>
+								<MudMenuItem OnClick="async () => await DeleteServer(server)">
 									Delete
 								</MudMenuItem>
 							</MudMenu>

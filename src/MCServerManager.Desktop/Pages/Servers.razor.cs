@@ -44,4 +44,31 @@ public partial class Servers : IDisposable
 	{
 		_disposable.Dispose();
 	}
+
+	async Task DeleteServer(MCServer server)
+	{
+		var result = await DialogService.ShowMessageBox(
+			"Warning", 
+			"Deleting can not be undone!", 
+			yesText:"Delete!", cancelText:"Cancel");
+		
+		if (result is true)
+		{
+			TaskService.Create(new ()
+			{
+				Tittle = $"Deleting server {server.Name}",
+				TaskCreator = DeleteServerCore(server)
+			});
+		}
+	}
+
+	Func<RunningBackgroundTask, Task> DeleteServerCore(MCServer server) => async task =>
+	{
+		task.BackgroundTask.CompletionSeverity = Severity.Info;
+		task.BackgroundTask.CompletionMessage = $"Server <b>{server.Name}</b> has been deleted";
+		ServerManager.Remove(server.Id);
+		ConnectionsManager.DeleteConnection(server.Id);
+		ServerFactory.Destroy(ServerFactory.Entries.First(t => t.Label == server.Name));
+		await Storage.Save(JsRuntime);
+	};
 }
