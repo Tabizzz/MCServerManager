@@ -37,7 +37,7 @@ public class SftpConnectionsManager : BaseManager<Guid, (DateTime lastUse, SftpC
 		}
 
 		var client = new SftpClient(credentials.Host, credentials.Port, credentials.User, credentials.Password);
-		await Task.Run(client.Connect);
+		await client.ConnectAsync(CancellationToken.None);
 		
 		_dictionary.Add(key, (DateTime.Now, client));
 		return client;
@@ -52,7 +52,7 @@ public class SftpConnectionsManager : BaseManager<Guid, (DateTime lastUse, SftpC
 		}
 
 		var client = new SftpClient(server.Sftp.Host, server.Sftp.Port, server.Sftp.User, server.Sftp.Password);
-		await Task.Run(client.Connect);
+		await client.ConnectAsync(CancellationToken.None);
 		
 		_dictionary.Add(server.Id, (DateTime.Now, client));
 		return client;
@@ -102,7 +102,7 @@ public class SftpConnectionsManager : BaseManager<Guid, (DateTime lastUse, SftpC
 		}
 
 		if(!value.connection.IsConnected)
-			await Task.Run(value.connection.Connect);
+			await value.connection.ConnectAsync(CancellationToken.None);
 		value.lastUse = DateTime.Now;
 		return value.connection;
 	}

@@ -1,3 +1,6 @@
 [submodule "deps/mcswlib"]
 	path = deps/mcswlib
 	url = https://github.com/Tabizzz/mcswlib
+[submodule "deps/SSH.NET"]
+	path = deps/SSH.NET
+	url = https://github.com/Tabizzz/SSH.NET.git
