@@ -1,3 +1,4 @@
+using MCServerManager.Desktop.Models;
 using Microsoft.Extensions.Logging;
 using Renci.SshNet;
 namespace MCServerManager.Desktop.Managers;
@@ -39,6 +40,21 @@ public class SftpConnectionsManager : BaseManager<Guid, (DateTime lastUse, SftpC
 		await Task.Run(client.Connect);
 		
 		_dictionary.Add(key, (DateTime.Now, client));
+		return client;
+	}
+	
+	internal async Task<SftpClient> CreateConnection(MCServer server)
+	{
+		if (_dictionary.TryGetValue(server.Id, out var value))
+		{
+			value.connection.Disconnect();
+			_dictionary.Remove(server.Id);
+		}
+
+		var client = new SftpClient(server.Sftp.Host, server.Sftp.Port, server.Sftp.User, server.Sftp.Password);
+		await Task.Run(client.Connect);
+		
+		_dictionary.Add(server.Id, (DateTime.Now, client));
 		return client;
 	}
 

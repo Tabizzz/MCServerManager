@@ -4,8 +4,6 @@ namespace MCServerManager.Desktop.Components;
 
 public partial class TaskList : IDisposable
 {
-	bool _hasTask;
-
 	bool _open;
 
 	IDisposable _disposable = null!;

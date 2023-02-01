@@ -29,6 +29,7 @@ public partial class CreateServerDialog
 			_page++;
 		if (_page == 3)
 		{
+			ServerManager.Register(_server);
 			MudDialog.Close(DialogResult.Ok(_server.Id));
 			return;
 		}
@@ -53,15 +54,13 @@ public partial class CreateServerDialog
 			try
 			{
 				_server.Sftp = _sftp;
-				ServerManager.Register(_server);
-				var value = await ConnectionsManager.CreateConnection(_server.Id, true);
+				var value = await ConnectionsManager.CreateConnection(_server);
 				if (value is null)
 					throw new("Unable to register server, no valid credentials");
 			}
 			catch (Exception e)
 			{
 				_server.Sftp = new();
-				ServerManager.Remove(_server.Id);
 				ServerFactory.Destroy(server);
 				_error = e.Message;
 				_page = 1;
