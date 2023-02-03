@@ -1,4 +1,4 @@
-@page "/files/{*Path}"
+﻿@page "/files/{*Path}"
 @using MCServerManager.Desktop.Services
 @using MCServerManager.Desktop.Controllers
 @using MCServerManager.Desktop.Managers
@@ -9,6 +9,7 @@
 @inject IDialogService DialogService
 @inject SftpController Sftp
 @inject ISnackbar Snackbar
+@inject TaskService TaskService
 
 <PageTitle>@Path</PageTitle>
 
@@ -112,7 +113,7 @@ else
 	</YesButton>
 </MudMessageBox>
 
-<MudOverlay Visible="@(_uploading || _downloading)" DarkBackground="true">
+<MudOverlay Visible="@(_uploading)" DarkBackground="true">
 	<MudStack Row="false" Justify="Justify.Center" Class="align-center">
 		<MudProgressCircular Color="Color.Info" Class="ms-n1 mr-3" Size="Size.Large" Value="_percentage" Indeterminate="@(_uploaded==_toUpload)"/>
 		@if (_uploaded == _toUpload)

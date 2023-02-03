@@ -25,23 +25,11 @@ public class TaskService : List<BackgroundTask>
 	{
 		lock (Lock)
 		{
-			task.Task = task.TaskCreator(CreateRunningTask(task));
+			task.Task = task.TaskCreator(new(task, _publisher));
 			task.Task.ContinueWith(_ => Finalize(task));
 			Add(task);
 			_publisher.PublishAsync(task);
 		}
-	}
-
-	RunningBackgroundTask CreateRunningTask(BackgroundTask task)
-	{
-		return new()
-		{
-			BackgroundTask = task,
-			Update = () =>
-			{
-				_publisher.PublishAsync(task);
-			}
-		};
 	}
 
 	void Finalize(BackgroundTask task)

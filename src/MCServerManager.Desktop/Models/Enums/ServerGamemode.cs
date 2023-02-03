@@ -1,4 +1,4 @@
-namespace MCServerManager.Desktop.Models.Enums;
+﻿namespace MCServerManager.Desktop.Models.Enums;
 
 public enum ServerGamemode
 {

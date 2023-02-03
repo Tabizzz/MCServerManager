@@ -1,4 +1,4 @@
-using MCServerManager.Desktop.Models;
+﻿using MCServerManager.Desktop.Models;
 using MessagePipe;
 namespace MCServerManager.Desktop.Shared;
 

@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Text;
 using MCServerManager.Desktop.Managers;
 using MCServerManager.Desktop.Models;
@@ -225,7 +225,7 @@ public class SftpController
 		return string.Empty;
 	}
 	
-	public async Task SaveFile(Guid id, string path, string localFile, Action<ulong> action)
+	public async Task<HttpStatusCode> SaveFile(Guid id, string path, string localFile, Action<ulong> action)
 	{
 		_logger.LogInformation("Reading file \"{Path}\" for {Id}", path, id);
 		
@@ -239,13 +239,13 @@ public class SftpController
 					(a,b,c,d, e)=>client.BeginDownloadFile(a, b, d, e, c), 
 					client.EndDownloadFile,
 					path, local, action, null);
-				StatusCode = HttpStatusCode.Accepted;
+				return HttpStatusCode.Accepted;
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e, "Error on authentication");
 			}
 		}
-		StatusCode = HttpStatusCode.Unauthorized;
+		return HttpStatusCode.Unauthorized;
 	}
 }

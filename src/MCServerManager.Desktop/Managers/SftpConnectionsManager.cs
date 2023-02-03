@@ -1,4 +1,4 @@
-using MCServerManager.Desktop.Models;
+﻿using MCServerManager.Desktop.Models;
 using Microsoft.Extensions.Logging;
 using Renci.SshNet;
 namespace MCServerManager.Desktop.Managers;

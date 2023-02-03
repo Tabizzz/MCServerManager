@@ -1,4 +1,4 @@
-namespace MCServerManager.Desktop.Shared;
+﻿namespace MCServerManager.Desktop.Shared;
 
 public partial class MainLayout
 {

@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using MCServerManager.Desktop.Shared;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;

@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using MCServerManager.Desktop.Components.Dialogs;
 using MCServerManager.Desktop.Models;
 using MCServerManager.Desktop.Shared;
@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
+using DialogResult = NativeFileDialogSharp.DialogResult;
 namespace MCServerManager.Desktop.Pages;
 
 public partial class Files : IDisposable
@@ -173,37 +174,52 @@ public partial class Files : IDisposable
 	}
 
 	bool _saveOpen;
-
-	bool _downloading;
 	
 	async Task DownloadFile(SftpFileEntry file)
 	{
 		if(ServerManager.CurrentServer is null) return;
 		_saveOpen = true;
-		_toUpload = file.Size;
-		_uploaded = 0;
-		_percentage = 0;
-		
 		StateHasChanged();
 		await Task.Delay(10);
 		var dialog = NativeFileDialogSharp.Dialog.FileSave(System.IO.Path.GetExtension(file.Name).TrimStart('.'));
 		_saveOpen = false;
 		if (dialog.IsOk)
 		{
-			_downloading = true;
-			await Sftp.SaveFile(ServerManager.CurrentServer.Id, file.Path, dialog.Path, obj =>
+			var key = $"download:({file.Path})to({dialog.Path})";
+			if (TaskService.FirstOrDefault(t => t.Key == key) is not null)
 			{
-				InvokeAsync(() =>
-				{
-					_uploaded = (long)obj;
-					_percentage = Convert.ToDouble(_uploaded * 100 / file.Size);
-					StateHasChanged();
-				});
+				Snackbar.Add($"The {file.Name} file is already being downloaded to the same location");
+				return;
+			}
+			TaskService.Create(new()
+			{
+				Tittle = $"Downloading file <b>{file.Name}</b>",
+				Progress = 0,
+				Key = key,
+				TaskCreator = DownloadFileCore(file, dialog)
 			});
 		}
-		_downloading = false;
-		StateHasChanged();
 	}
+
+	Func<RunningBackgroundTask, Task> DownloadFileCore(SftpFileEntry file, DialogResult dialog) => async task =>
+	{
+		var response = await Sftp.SaveFile(ServerManager.CurrentServer!.Id, file.Path, dialog.Path, obj =>
+		{
+			task.BackgroundTask.Description = $"{obj/1024}KB / {file.Size/1024}KB";
+			task.BackgroundTask.Progress = obj * 100f / file.Size;
+			task.Update();
+		});
+		if (response == HttpStatusCode.Accepted)
+		{
+			task.BackgroundTask.CompletionSeverity = Severity.Success;
+			task.BackgroundTask.CompletionMessage = $"File <b>{file.Name}</b> has been downloaded";
+		}
+		else
+		{
+			task.BackgroundTask.CompletionSeverity = Severity.Error;
+			task.BackgroundTask.CompletionMessage = $"Unable to download file <b>{file.Name}</b>";
+		}
+	};
 
 	async Task RenameFile(SftpFileEntry file)
 	{

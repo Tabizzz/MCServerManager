@@ -1,4 +1,4 @@
-namespace MCServerManager.Desktop.Models;
+﻿namespace MCServerManager.Desktop.Models;
 
 public class SftpFileEntry
 {

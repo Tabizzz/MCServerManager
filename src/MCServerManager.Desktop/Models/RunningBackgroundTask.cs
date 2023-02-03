@@ -1,4 +1,5 @@
-﻿namespace MCServerManager.Desktop.Models;
+﻿using MessagePipe;
+namespace MCServerManager.Desktop.Models;
 
 /// <summary>
 /// Represent a task that is running on the background
@@ -8,12 +9,18 @@ public class RunningBackgroundTask
 	/// <summary>
 	/// The actual task.
 	/// </summary>
-	public required BackgroundTask BackgroundTask { get; init; }
-	
-	/// <summary>
-	/// An action used to update the task in the UI, should be called after ny modification to the task.
-	/// </summary>
-	public required Action Update { get; init; }
+	public BackgroundTask BackgroundTask { get; }
+
+	DateTime _lastUpdate;
+
+	readonly IAsyncPublisher<BackgroundTask> _publisher;
+
+	public RunningBackgroundTask(BackgroundTask task, IAsyncPublisher<BackgroundTask> publisher)
+	{
+		BackgroundTask = task;
+		_lastUpdate = DateTime.Now;
+		_publisher = publisher;
+	}
 
 	/// <summary>
 	/// Update the progress of the task.
@@ -23,5 +30,15 @@ public class RunningBackgroundTask
 	{
 		BackgroundTask.Progress = progress;
 		Update();
+	}
+
+	public void Update()
+	{
+		var passedTime = DateTime.Now - _lastUpdate;
+		if (passedTime.Milliseconds > 10)
+		{
+			_lastUpdate = DateTime.Now;
+			_publisher.Publish(BackgroundTask);
+		}
 	}
 }

@@ -1,4 +1,4 @@
-namespace MCServerManager.Desktop.Utils;
+﻿namespace MCServerManager.Desktop.Utils;
 public class StreamAdapter : Stream
 {
 

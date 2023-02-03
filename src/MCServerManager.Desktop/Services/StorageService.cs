@@ -73,11 +73,11 @@ public class StorageService
 			arg.BackgroundTask.Progress = t++ / c * 100;
 			arg.Update();
 			var pinger = _serverFactory.MakeOrGet(server.Ip, server.Port, server.Name);
-			await pinger.Updater.Ping();
+			await pinger.Updater.Ping(5);
 			var events = pinger.Update();
 			_serverFactory.ServerChanged?.Invoke(pinger, events);
 		}
-		_serverFactory.StartAutoUpdate(5);
+		_serverFactory.StartAutoUpdate(5, 10);
 	}
 
 	async Task LoadServer(MCServer server)

@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Net;
 using MCServerManager.Desktop.Controllers;
 using MCServerManager.Desktop.Managers;
